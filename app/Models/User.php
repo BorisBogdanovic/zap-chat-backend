@@ -1,16 +1,15 @@
 <?php
-
 namespace App\Models;
-
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable,HasApiTokens; 
 
     /**
      * The attributes that are mass assignable.
@@ -19,10 +18,15 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'last_name',
         'email',
         'password',
+        'image_path',
+        'username'
     ];
 
+
+    protected $guarded = ['is_admin'];
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -45,4 +49,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function sendPasswordResetNotification($token)
+{
+    $frontendUrl = rtrim(config('app.frontend_url'), '/');
+    $email = urlencode($this->email);
+
+    $url = "{$frontendUrl}/reset-password?token={$token}&email={$email}";
+
+    \Mail::to($this->email)->send(
+        new \App\Mail\ResetPasswordEmail($url, $this)
+    );
+}
 }
