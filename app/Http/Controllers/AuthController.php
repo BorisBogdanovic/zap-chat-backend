@@ -13,7 +13,6 @@ use Illuminate\Auth\Events\PasswordReset;
 
 class AuthController extends Controller
 {
-
 //////////////////////////////////////////////////////////////////////////////LOGIN
 public function login(LoginUserRequest $request){
 
@@ -55,7 +54,7 @@ public function forgotPassword(ForgotPasswordRequest $request){
     Password::sendResetLink($request->only('email'));
     
     return response()->json([
-        'status' => true,
+        'status' => 'success',
         'status' => 'If your email exists in our system, you will receive a reset link shortly.'
     ], 200);
 }
@@ -72,11 +71,12 @@ public function resetPassword(ResetPasswordRequest $request){
     );
 if ($status === Password::PASSWORD_RESET) {
         return response()->json([
+            'status'=>'success',
             'message' => 'Password reset successfully'
         ], 200);
     }
-
-    return response()->json([
+        return response()->json([
+        'status'=>'error',
         'message' => 'Password reset failed',
         'error_code' => $status
     ], 422);
@@ -93,13 +93,9 @@ public function register(RegisterUserRequest $request){
     ]);
 
     return response()->json([
-        'status'  => true,
+        'status'  => 'success',
         'message' => 'User registered successfully.',
         'data'    => $user
     ], 201);
 }
-
-
-
-   
 }
