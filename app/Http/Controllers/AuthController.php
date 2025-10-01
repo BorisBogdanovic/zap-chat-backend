@@ -16,37 +16,37 @@ class AuthController extends Controller
 
 //////////////////////////////////////////////////////////////////////////////LOGIN
 public function login(LoginUserRequest $request){
-    
-    if (Auth::attempt($request->only('email', 'password'))) {
-        $user = Auth::user();
 
-    if ($user) {
+    if (!Auth::attempt($request->only('email', 'password'))) {
         return response()->json([
-            'status' => true,
-            'message' => 'Welcome ' . $user->name . ' ' . $user->last_name,
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-                'image_path' => $user->image_path,
-                'username' => $user->username,
-            ],
-            'auth_token' => $user->createToken('auth_token')->plainTextToken,
-        ], 200);
-        }
-    }
-        return response()->json([
+            'status'  => 'error',
             'message' => 'The provided credentials are incorrect.',
         ], 401);
+    }
+
+    $user = Auth::user();
+
+    return response()->json([
+        'status'     => 'success',
+        'message'    => 'Welcome ' . $user->name . ' ' . $user->last_name,
+        'data'       => [
+            'id'         => $user->id,
+            'name'       => $user->name,
+            'last_name'  => $user->last_name,
+            'email'      => $user->email,
+            'image_path' => $user->image_path,
+            'username'   => $user->username,
+        ],
+        'auth_token' => $user->createToken('auth_token')->plainTextToken,
+    ], 200);
 }
 //////////////////////////////////////////////////////////////////////////////LOGOUT
 public function logout(){
-        
+
     Auth::user()->tokens()->delete();
 
         return response()->json([
-            'status' => true, 
+            'status' => 'success', 
             'message' => 'The user has been successfully logged out'
         ], 200);
 }

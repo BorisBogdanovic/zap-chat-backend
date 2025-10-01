@@ -40,4 +40,23 @@ class ResetPasswordRequest extends FormRequest
         ],
     ];
     }
+
+    public function messages(): array
+{
+    return [
+        
+        'email.required' => 'Email is required.',
+        'email.email'    => 'Please enter a valid email address.',
+        'email.exists'   => 'No account found with this email.',
+
+       
+        'token.required' => 'Reset token is required.',
+        'token.string'   => 'Reset token must be a valid string.',
+
+        'password.required'  => 'Password is required.',
+        'password.string'    => 'Password must be a valid string.',
+        'password.min'       => 'Password must be at least 8 characters long.',
+        'password.confirmed' => 'Password confirmation does not match.',
+    ];
+}
 }
