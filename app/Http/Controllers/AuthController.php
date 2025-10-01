@@ -4,6 +4,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\ForgotPasswordRequest;
+use App\Http\Requests\RegisterUserRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
@@ -58,9 +59,8 @@ public function forgotPassword(ForgotPasswordRequest $request){
         'status' => 'If your email exists in our system, you will receive a reset link shortly.'
     ], 200);
 }
-/////////////////////////////////////////////////////////////////////RESET PASSWORD
-public function resetPassword(ResetPasswordRequest $request)
-{
+//////////////////////////////////////////////////////////////////////////////RESET PASSWORD
+public function resetPassword(ResetPasswordRequest $request){
     $status = Password::reset(
         $request->only('email', 'password', 'token'),
         function ($user) use ($request) {
@@ -81,7 +81,23 @@ if ($status === Password::PASSWORD_RESET) {
         'error_code' => $status
     ], 422);
 }
-/////////////////////////////////////////////////////////////////////REGISTER
+//////////////////////////////////////////////////////////////////////////////REGISTER
+public function register(RegisterUserRequest $request){
+    
+    $user=User::create([
+        'name'=>$request->name,
+        'last_name'=>$request->last_name,
+        'email'=>$request->email,
+        'password'=>Hash::make($request->password),
+        'username'=>$request->username
+    ]);
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'User registered successfully.',
+        'data'    => $user
+    ], 201);
+}
 
 
 
