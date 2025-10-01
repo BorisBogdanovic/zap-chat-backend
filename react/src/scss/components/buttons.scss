@@ -1,0 +1,13 @@
+.btn-primary {
+    border-radius: 8px;
+    border: 1px solid #7f56d9;
+    background-color: #7f56d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    span {
+        padding-block: 10px;
+        color: white;
+    }
+}
