@@ -22,16 +22,25 @@ public function updateImage(UpdateUserImageRequest $request){
 
   
 //////////////////////////////////////////////////////////////////////////////GET USERS
-public function fetchUsers(){
-   
-   $users = User::where('id', '!=', Auth::user()->id)
-                 ->get(['id', 'name', 'last_name', 'email', 'image_path', 'username']);
+public function fetchUsers(Request $request)
+{
+    $query = User::where('id', '!=', Auth::id());
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('last_name', 'like', "%{$search}%")
+              ->orWhere('username', 'like', "%{$search}%");
+        });
+    }
+
+    $users = $query->get(['id', 'name', 'last_name', 'email', 'image_path', 'username']);
 
     return response()->json([
-        'status'=>'success',
-        'message'=>"Users fetched successfully!",
-        'data'=>$users
-
+        'status'  => 'success',
+        'message' => 'Users fetched successfully!',
+        'data'    => $users
     ]);
 }
 }
