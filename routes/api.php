@@ -13,10 +13,10 @@ Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('p
 Route::middleware('auth:sanctum')->group(function () {
   Route::post('logout', [AuthController::class, 'logout']);
   Route::get('users', [UserController::class, 'fetchUsers']);
-  Route::post('user/update-image', [UserController::class, 'updateImage']);
   Route::post('send-message', [ChatController::class, 'sendMessage']);
   Route::get('fetch-messages',[ChatController::class,'fetchMessages']);
   Route::patch('user/settings', [UserController::class, 'settings']);
+  Route::post('user/avatar', [UserController::class, 'updateImage']);
   
 });
 
