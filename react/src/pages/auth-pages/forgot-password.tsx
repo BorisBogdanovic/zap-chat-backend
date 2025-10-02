@@ -1,4 +1,36 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useMutation } from "@tanstack/react-query";
+import { forgotPasswordReq } from "../../services/authServices";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { ForgotPassField } from "../../types/type";
+
 function ForgotPassword() {
+    const navigate = useNavigate();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<ForgotPassField>();
+
+    // HTTP POST
+    const forgotPassMutation = useMutation({
+        mutationFn: forgotPasswordReq,
+        onSuccess: (data) => {
+            if (data && data.status) {
+                alert("Instruction are sent to your email!");
+            }
+        },
+        onError: () => {
+            alert("Error!");
+        },
+    });
+
+    function onSubmit(data: ForgotPassField) {
+        console.log("Data", data);
+        forgotPassMutation.mutate(data.email);
+    }
     return (
         <div className="auth-wrapper">
             <div className="bg-img-wrapper">
@@ -6,7 +38,7 @@ function ForgotPassword() {
                 <img src="/images/auth-bg.png" alt="logo" />
             </div>
             <div className="form-wrapper">
-                <div>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="logo">
                         {" "}
                         <img src="/icons/zc-logo.png" alt="logo" />
@@ -23,17 +55,32 @@ function ForgotPassword() {
                             <input
                                 placeholder="Enter your email"
                                 type="email"
+                                {...register("email", {
+                                    required: "Email is required",
+                                    pattern: {
+                                        value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+                                        message: "Enter a valid email",
+                                    },
+                                })}
                             />
                         </div>
+                        {errors.email && (
+                            <p className="error-text">{errors.email.message}</p>
+                        )}
                     </div>
 
-                    <div className="form-link-text">Create account?</div>
+                    <div
+                        onClick={() => navigate("/login")}
+                        className="form-link-text"
+                    >
+                        Login?
+                    </div>
                     <div>
-                        <button className="btn-primary">
+                        <button type="submit" className="btn-primary">
                             <span>Send</span>
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     );
