@@ -13,11 +13,12 @@ class Message extends Model
         'read_at',
     ];
 
-    public function sender()
+public function sender()
     {
         return $this->belongsTo(User::class, 'from_id');
     }
-        public function receiver()
+    
+public function receiver()
     {
         return $this->belongsTo(User::class, 'to_id');
     }
