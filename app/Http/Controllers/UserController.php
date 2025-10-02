@@ -12,8 +12,8 @@ class UserController extends Controller
 {
 //////////////////////////////////////////////////////////////////////////////EDIT USERS SETTIGNS
 public function settings(UserSettingsRequest $request){
-    
-   }
+   
+}
 
 //////////////////////////////////////////////////////////////////////////////UPDATE USER IMAGE
 public function updateImage(UpdateUserImageRequest $request){
@@ -23,8 +23,8 @@ public function updateImage(UpdateUserImageRequest $request){
   
 //////////////////////////////////////////////////////////////////////////////GET USERS
 public function fetchUsers(){
-
-  $users = User::where('id', '!=', Auth::user()->id)
+   
+   $users = User::where('id', '!=', Auth::user()->id)
                  ->get(['id', 'name', 'last_name', 'email', 'image_path', 'username']);
 
     return response()->json([

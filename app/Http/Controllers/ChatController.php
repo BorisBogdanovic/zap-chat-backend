@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
-
+//////////////////////////////////////////////////////////////////////////////GET MESSAGES BETWEEN USERS
 public function fetchMessages (FetchMessageRequest $request ){
 
   $contact= User::findOrFail($request->contact_id);
@@ -26,14 +26,13 @@ public function fetchMessages (FetchMessageRequest $request ){
     ->orderBy('created_at', 'asc')
     ->get();
 
-
-
-     return response()->json([
+  return response()->json([
         'status' => 'success',
         'contact'=>$contact,
         'messages'=>$messages
      ]);
 } 
+//////////////////////////////////////////////////////////////////////////////SEND MESSAGES TO OTHER USER
 public function sendMessage(MessageRequest $request){
 
         $message = Message::create([
