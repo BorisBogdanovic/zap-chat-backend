@@ -30,7 +30,7 @@ class RegisterUserRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
+public function messages(): array
 {
     return [
         'name.required' => 'First name is required.',
