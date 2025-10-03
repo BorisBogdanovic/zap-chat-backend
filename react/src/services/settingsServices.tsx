@@ -31,3 +31,29 @@ export async function editUser(editedObj: EditedUser) {
         throw err;
     }
 }
+
+// Upload / Change Avatar HTTP request
+export async function uploadAvatar(file: File) {
+    const storedUser = localStorage.getItem("loggedInUser");
+    const token = storedUser ? JSON.parse(storedUser).auth_token : null;
+
+    if (!token) throw new Error("No token found");
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    const res = await fetch(`${API_URL}/user/avatar`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+        },
+        body: formData,
+    });
+
+    if (!res.ok) {
+        throw new Error("Failed to upload avatar");
+    }
+
+    return res.json();
+}
