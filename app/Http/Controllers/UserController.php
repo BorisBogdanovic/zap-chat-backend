@@ -36,25 +36,20 @@ public function settings(UserSettingsRequest $request){
 //////////////////////////////////////////////////////////////////////////////UPDATE USER IMAGE
 public function updateImage(UpdateUserImageRequest $request){
     $user = auth()->user();
-
-    if (!$request->hasFile('avatar')) {
+    if(!$request->hasFile('avatar')) {
         return response()->json([
             'status' => 'error',
             'message' => 'No avatar file uploaded.'
         ], 422);
     }
-
     $file = $request->file('avatar');
     $timestamp = now()->timestamp;
     $ext = $file->getClientOriginalExtension();
-  $fileName = 'avatar_' . $user->id . '_' . $user->username . '_' . $timestamp . '.' . $ext;
-
+    $fileName = 'avatar_' . $user->id . '_' . $user->username . '_' . $timestamp . '.' . $ext;
     $path = $file->storeAs('images/avatars', $fileName, 'public');
-
-    if ($user->image_path !== 'images/default.png' && Storage::disk('public')->exists($user->image_path)) {
+    if($user->image_path !== 'images/default.png' && Storage::disk('public')->exists($user->image_path)){
         Storage::disk('public')->delete($user->image_path);
     }
-
     $user->image_path = $path;
     $user->save();
 
