@@ -1,13 +1,45 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { logoutUser } from "../services/authServices";
+import { logoutUserFromReduxAndLS } from "../redux/slice";
 
 function Sidebar() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     // Logged user from Redux
     const loggedUser = useSelector(
         (state: RootState) => state.auth.loggedInUser
     );
+
+    // HTTP POST
+    const logoutUserMutation = useMutation({
+        mutationFn: logoutUser,
+        onSuccess: (data) => {
+            console.log("Temporary use because of build", data);
+            // Clear localStorage
+            localStorage.removeItem("loggedInUser");
+            localStorage.removeItem("auth_token");
+
+            // Redux
+            dispatch(logoutUserFromReduxAndLS());
+
+            // Navigation
+            navigate("/login");
+        },
+        onError: (err) => {
+            console.log("Temporary use because of build", err);
+
+            alert("Logout failed!");
+        },
+    });
+
+    function handleLogout() {
+        logoutUserMutation.mutate();
+    }
     return (
         <div className="sidebar">
             <div className="logo-wrapper">
@@ -17,7 +49,7 @@ function Sidebar() {
                 <NavLink to={"/"}>
                     {" "}
                     <div className="nav-item">
-                        <img src="/icons/chat-icon.png" alt="logo" />
+                        <img src="/icons/chat-icon.png" alt="chat icon" />
                         {/* <span>Chat</span> */}
                     </div>
                 </NavLink>
@@ -30,10 +62,17 @@ function Sidebar() {
                 </NavLink>
             </div>
             <div className="profile">
-                <img
+                {/* <img
                     src={`http://localhost:8000/${loggedUser?.image_path}`}
-                    alt="Profilna slika"
-                />
+                    alt="Profile img"
+                /> */}
+                <div>
+                    <img
+                        onClick={handleLogout}
+                        src="/icons/logout-icon.png"
+                        alt="logout icon"
+                    />
+                </div>
             </div>
         </div>
     );

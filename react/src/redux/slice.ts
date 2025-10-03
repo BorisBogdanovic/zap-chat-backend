@@ -25,12 +25,12 @@ const authSlice = createSlice({
         },
 
         // Add logic for logout
-        logoutUser: (state) => {
+        logoutUserFromReduxAndLS: (state) => {
             state.loggedInUser = null;
             localStorage.removeItem("loggedInUser");
         },
     },
 });
 
-export const { addLoggedUser, logoutUser } = authSlice.actions;
+export const { addLoggedUser, logoutUserFromReduxAndLS } = authSlice.actions;
 export default authSlice.reducer;

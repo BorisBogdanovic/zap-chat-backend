@@ -152,7 +152,7 @@ $border-gray: #ddd;
         flex-direction: column;
         background: $light-gray;
         padding: 20px;
-
+        overflow-y: scroll;
         .message {
             max-width: 60%;
             padding: 10px 15px;
@@ -203,6 +203,7 @@ $border-gray: #ddd;
             display: flex;
             margin-top: auto;
             padding-top: 10px;
+            bottom: 0;
             input {
                 flex: 1;
                 padding: 10px 15px;

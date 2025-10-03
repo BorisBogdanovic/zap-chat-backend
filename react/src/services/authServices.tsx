@@ -42,6 +42,35 @@ export async function loginUser(user: LoginFormUser) {
     }
 }
 
+// Logout
+export async function logoutUser() {
+    try {
+        // Find token
+        const storedUser = localStorage.getItem("loggedInUser");
+        const token = storedUser ? JSON.parse(storedUser).auth_token : null;
+
+        if (!token) throw new Error("No token found");
+
+        const res = await fetch(`${API_URL}/logout`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!res.ok) throw new Error(`${res.status}, ${res.statusText}`);
+
+        const data = await res.json();
+        console.log(data);
+
+        return data;
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 // Forgot Password Post HTTP request
 export async function forgotPasswordReq(email: string) {
     try {

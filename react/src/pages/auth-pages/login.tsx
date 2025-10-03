@@ -41,7 +41,7 @@ function Login() {
     });
 
     function onSubmit(data: LoginFormUser) {
-        console.log("Form data:", data);
+        // console.log("Form data:", data);
         loginUserMutation.mutate(data);
     }
 
