@@ -5,3 +5,9 @@
 input:focus {
     outline: none;
 }
+.loading-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

@@ -3,6 +3,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./components/privateRoute";
 import PublicRoute from "./components/publicRoute";
 import Layout from "./components/layout";
+import "ldrs/ring";
+import { Helix } from "ldrs/react";
+import "ldrs/react/Helix.css";
 
 const Register = lazy(() => import("./pages/auth-pages/register"));
 const Login = lazy(() => import("./pages/auth-pages/login"));
@@ -12,11 +15,15 @@ const ResetPassword = lazy(() => import("./pages/auth-pages/reset-password"));
 const Home = lazy(() => import("./pages/home"));
 const Settings = lazy(() => import("./pages/settings"));
 
+// Default values shown
+
 function App() {
     return (
         <>
             <BrowserRouter>
-                <Suspense fallback={<h2>Loading...</h2>}>
+                <Suspense
+                    fallback={<Helix size="45" speed="2.5" color="black" />}
+                >
                     <Routes>
                         <Route
                             path="/register"

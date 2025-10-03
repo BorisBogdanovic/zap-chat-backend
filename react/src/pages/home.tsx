@@ -7,6 +7,7 @@ import { fetchUsers } from "../services/chatServices";
 import { User } from "../types/type";
 import { useState } from "react";
 import { useDebounce } from "../hooks/useDebaunce";
+import { Helix } from "ldrs/react";
 
 function Home() {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ function Home() {
     );
 
     const [users_search, setUsersSearch] = useState("");
-    const debouncedSearch = useDebounce(users_search, 1000);
+    const debouncedSearch = useDebounce(users_search, 2000);
 
     // Get users
     const {
@@ -30,7 +31,12 @@ function Home() {
         retry: 1,
     });
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading)
+        return (
+            <div className="loading-wrapper">
+                <Helix size="100" speed="2" color="#6941c6" />
+            </div>
+        );
     if (error) return <p>{(error as Error).message}</p>;
     if (!users) return <p>No data found.</p>;
 
@@ -62,6 +68,7 @@ function Home() {
                         <input
                             style={{ width: "100%" }}
                             onChange={(e) => setUsersSearch(e.target.value)}
+                            value={users_search}
                             className="header-search"
                             placeholder="Search users..."
                             type="search"
