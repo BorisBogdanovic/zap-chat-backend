@@ -24,11 +24,21 @@ export type User = {
     name: string;
 };
 
+// Edited User Form
+export type EditedUser = {
+    name: string;
+    last_name: string;
+    username: string;
+    password: string;
+    password_confirmation: string;
+};
+
 // logged user
 export type LoggedUser = {
     auth_token: string;
     email: string;
     name: string;
+    last_name: string;
     image_path: string;
     username: string;
     id: number;
@@ -38,7 +48,7 @@ export type ForgotPassField = {
     email: string;
 };
 
-// Reset user obj?
+// Reset user obj
 export type ResetUserObj = {
     email: string;
     token: string;

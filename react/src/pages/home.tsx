@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUsers } from "../services/chatServices";
 import { User } from "../types/type";
@@ -10,7 +9,6 @@ import { useDebounce } from "../hooks/useDebaunce";
 import { Helix } from "ldrs/react";
 
 function Home() {
-    const navigate = useNavigate();
     const loggedUser = useSelector(
         (state: RootState) => state.auth.loggedInUser
     );

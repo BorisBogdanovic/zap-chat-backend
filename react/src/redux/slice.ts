@@ -29,8 +29,13 @@ const authSlice = createSlice({
             state.loggedInUser = null;
             localStorage.removeItem("loggedInUser");
         },
+        updateLoggedInUser: (state, action) => {
+            state.loggedInUser = action.payload;
+            // Osvezavanje usera i u local storage je uradjeno u komponenti
+        },
     },
 });
 
-export const { addLoggedUser, logoutUserFromReduxAndLS } = authSlice.actions;
+export const { addLoggedUser, logoutUserFromReduxAndLS, updateLoggedInUser } =
+    authSlice.actions;
 export default authSlice.reducer;
