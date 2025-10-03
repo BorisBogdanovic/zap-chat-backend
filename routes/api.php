@@ -17,7 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('fetch-messages',[ChatController::class,'fetchMessages']);
   Route::patch('user/settings', [UserController::class, 'settings']);
   Route::post('user/avatar', [UserController::class, 'updateImage']);
-  
+
 });
 
 

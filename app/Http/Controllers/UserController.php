@@ -35,10 +35,8 @@ public function settings(UserSettingsRequest $request){
         'data'    => $user,
     ]);
 }
-
 //////////////////////////////////////////////////////////////////////////////UPDATE USER IMAGE
-public function updateImage(Request $request)
-{
+public function updateImage(UpdateUserImageRequest $request){
     $user = auth()->user();
 
     if (!$request->hasFile('avatar')) {
@@ -75,10 +73,8 @@ public function updateImage(Request $request)
         ],
     ]);
 }
-
 //////////////////////////////////////////////////////////////////////////////GET USERS
-public function fetchUsers(UserSearchRequest $request)
-{
+public function fetchUsers(UserSearchRequest $request){
     $query = User::where('id', '!=', Auth::id());
 
     if ($request->filled('search')) {
@@ -98,5 +94,4 @@ public function fetchUsers(UserSearchRequest $request)
         'data'    => $users
     ]);
 }
-
 }
