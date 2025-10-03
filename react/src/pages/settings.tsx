@@ -2,18 +2,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { editUser } from "../services/settingsServices";
-import { EditedUser, User } from "../types/type";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { editUser, uploadAvatar } from "../services/settingsServices";
+import { EditedUser } from "../types/type";
 import { updateLoggedInUser } from "../redux/slice";
 
 function Settings() {
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
-
-    const loggedUser = useSelector(
-        (state: RootState) => state.auth.loggedInUser
-    );
 
     // React Form Hook
     const {
@@ -50,13 +46,54 @@ function Settings() {
         },
     });
 
-    function onSubmit(data: EditedUser) {
-        console.log("Edited obj", data);
+    // React Query upload POST
+    const { mutate: uploadMutate } = useMutation({
+        mutationFn: (file: File) => uploadAvatar(file),
+        onSuccess: (data) => {
+            const newImagePath = data.data.image_path;
+            console.log(newImagePath);
 
+            // Update Redux
+            dispatch(
+                updateLoggedInUser({
+                    ...loggedUser,
+                    image_path: newImagePath,
+                })
+            );
+
+            // Update localStorage
+            const storedUser = JSON.parse(
+                localStorage.getItem("loggedInUser") || "{}"
+            );
+            localStorage.setItem(
+                "loggedInUser",
+                JSON.stringify({ ...storedUser, image_path: newImagePath })
+            );
+
+            alert("Avatar updated!");
+        },
+        onError: () => {
+            alert("Failed to upload avatar");
+        },
+    });
+
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        uploadMutate(file);
+    }
+
+    function onSubmit(data: EditedUser) {
+        // console.log("Edited obj", data);
         editUserFormFields({
             editedObj: data,
         });
     }
+
+    const loggedUser = useSelector(
+        (state: RootState) => state.auth.loggedInUser
+    );
+    console.log("LOGGED USER", loggedUser);
 
     return (
         <div className="profile-page">
@@ -64,11 +101,21 @@ function Settings() {
                 <div className="profile-header">
                     <div className="img-wrapper">
                         <img
-                            src={`http://localhost:8000/${loggedUser?.image_path}`}
+                            src={`http://localhost:8000/storage/${
+                                loggedUser?.image_path
+                            }?t=${Date.now()}`}
                             alt="Profilna slika"
                         />
+
                         <label className="edit-avatar">
-                            <input type="file" accept="image/*" />
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
+                            {/* <span>
+                                {isLoading ? "Uploading..." : "Change Image"}
+                            </span> */}
                             <span>Change Image</span>
                         </label>
                     </div>

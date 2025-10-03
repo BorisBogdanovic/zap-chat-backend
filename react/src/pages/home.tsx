@@ -55,7 +55,7 @@ function Home() {
                     <div className="profile-wrapper">
                         <div className="img-wrapper">
                             <img
-                                src={`http://localhost:8000/${loggedUser?.image_path}`}
+                                src={`http://localhost:8000/storage/${loggedUser?.image_path}`}
                                 alt="Profilna slika"
                             />
                         </div>
@@ -77,8 +77,8 @@ function Home() {
                             <div key={user.id} className="chat">
                                 <div className="user-img-wrapper">
                                     <img
-                                        src="/icons/default-icon.png"
-                                        alt="user-img"
+                                        src={`http://localhost:8000/${user?.image_path}`}
+                                        alt="Profilna slika"
                                     />
                                 </div>
                                 <div className="text-wrapper">
