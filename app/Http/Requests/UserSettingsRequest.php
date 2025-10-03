@@ -24,7 +24,7 @@ class UserSettingsRequest extends FormRequest
          return [
             'name'      => 'sometimes|required|string|max:255',
             'last_name' => 'sometimes|required|string|max:255',
-            'username'  => 'sometimes|required|string|max:255|unique:users,username',
+            'username' => 'sometimes|required|string|max:255|unique:users,username,' . auth()->id(),
             'password'  => 'sometimes|nullable|string|min:8|confirmed',
         ];
     }
