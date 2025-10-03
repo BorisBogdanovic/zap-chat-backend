@@ -2,12 +2,40 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUsers } from "../services/chatServices";
+import { User } from "../types/type";
+import { useState } from "react";
+import { useDebounce } from "../hooks/useDebaunce";
 
 function Home() {
     const navigate = useNavigate();
     const loggedUser = useSelector(
         (state: RootState) => state.auth.loggedInUser
     );
+
+    const [users_search, setUsersSearch] = useState("");
+    const debouncedSearch = useDebounce(users_search, 1000);
+
+    // Get users
+    const {
+        data: users,
+        isLoading,
+        error,
+    } = useQuery({
+        queryKey: ["users", debouncedSearch],
+        queryFn: () => fetchUsers(debouncedSearch),
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 30,
+        retry: 1,
+    });
+
+    if (isLoading) return <p>Loading...</p>;
+    if (error) return <p>{(error as Error).message}</p>;
+    if (!users) return <p>No data found.</p>;
+
+    console.log(users);
+
     return (
         <>
             <div className="chat-wrapper">
@@ -31,39 +59,32 @@ function Home() {
                         <div className="status">Available</div>
                     </div>
                     <div className="search-wrapper">
-                        <input placeholder="Search" type="search" />
+                        <input
+                            style={{ width: "100%" }}
+                            onChange={(e) => setUsersSearch(e.target.value)}
+                            className="header-search"
+                            placeholder="Search users..."
+                            type="search"
+                        />
                     </div>
                     <div className="chats">
-                        <div className="chat">
-                            <div className="user-img-wrapper">
-                                <img
-                                    src="/icons/default-icon.png"
-                                    alt="user-img"
-                                />
-                            </div>
-                            <div className="text-wrapper">
-                                <div className="chat-name">Kate Johnson</div>
-                                <div className="chat-text">
-                                    Some text she sends to...
+                        {users.data.map((user: User) => (
+                            <div key={user.id} className="chat">
+                                <div className="user-img-wrapper">
+                                    <img
+                                        src="/icons/default-icon.png"
+                                        alt="user-img"
+                                    />
                                 </div>
-                            </div>
-                            <div className="chat-time">11:15</div>
-                        </div>
-                        <div className="chat">
-                            <div className="user-img-wrapper">
-                                <img
-                                    src="/icons/default-icon.png"
-                                    alt="user-img"
-                                />
-                            </div>
-                            <div className="text-wrapper">
-                                <div className="chat-name">Kate Johnson</div>
-                                <div className="chat-text">
-                                    Some text she sends to...
+                                <div className="text-wrapper">
+                                    <div className="chat-name">{user.name}</div>
+                                    <div className="chat-text">
+                                        Some text she sends to...
+                                    </div>
                                 </div>
+                                <div className="chat-time">11:15</div>
                             </div>
-                            <div className="chat-time">11:15</div>
-                        </div>
+                        ))}
                     </div>
                 </div>
                 <div className="conversation">

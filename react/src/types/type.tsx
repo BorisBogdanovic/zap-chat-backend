@@ -14,14 +14,17 @@ export type LoginFormUser = {
     password: string;
 };
 
-// User?
+// User
 export type User = {
     username: string;
     email: string;
-    password: string;
+    image_path: string;
+    last_name: string;
+    id: number;
+    name: string;
 };
 
-// logged user?
+// logged user
 export type LoggedUser = {
     auth_token: string;
     email: string;
