@@ -22,11 +22,9 @@ public function settings(UserSettingsRequest $request){
         'last_name',
         'username',
     ]));
-
     if ($request->filled('password')) {
         $user->password = Hash::make($request->password);
     }
-
     $user->save();
 
     return response()->json([
