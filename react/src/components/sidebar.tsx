@@ -2,13 +2,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "../services/authServices";
 import { logoutUserFromReduxAndLS } from "../redux/slice";
 
 function Sidebar() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     // Logged user from Redux
     const loggedUser = useSelector(
@@ -39,6 +40,7 @@ function Sidebar() {
 
     function handleLogout() {
         logoutUserMutation.mutate();
+        queryClient.clear();
     }
     return (
         <div className="sidebar">
