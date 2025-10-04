@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
-    fetchMessages,
     fetchUsers,
+    fetchMessages,
     sendMessage,
 } from "../services/chatServices";
 import { User } from "../types/type";
 import { useEffect, useState } from "react";
 import { useDebounce } from "../hooks/useDebaunce";
 import { Helix } from "ldrs/react";
-import { pusher } from "../pusherClient";
+import echo, { pusher } from "../pusherClient";
 import { SendMessagePayload } from "../types/interfaces";
+import { useMutation } from "@tanstack/react-query";
 
 function Home() {
     const loggedUser = useSelector(
@@ -23,121 +24,76 @@ function Home() {
     const debouncedSearch = useDebounce(users_search, 2000);
     const [message, setMessage] = useState("");
     const [conversationMessages, setConversationMessages] = useState<any[]>([]);
-    const queryClient = useQueryClient();
 
-    // 1️⃣ Fetch users
+    // Fetch users
     const {
         data: users,
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["users", debouncedSearch, loggedUser?.id],
+        queryKey: ["users", debouncedSearch],
         queryFn: () => fetchUsers(debouncedSearch),
         staleTime: 0,
     });
 
-    // 2️⃣ Fetch messages for selected target user
-    const {
-        data: messages,
-        isLoading: isLoadingMsg,
-        error: isErrorMsg,
-    } = useQuery({
-        queryKey: ["messages", targetUser?.id],
-        queryFn: () => fetchMessages(targetUser!.id),
-        enabled: !!targetUser,
-    });
+    // Fetch messages only on targetUser change
+    // const {
+    //     data: messages,
+    //     isLoading: isLoadingMsg,
+    //     error: isErrorMsg,
+    // } = useQuery({
+    //     queryKey: ["messages", targetUser?.id],
+    //     queryFn: () => fetchMessages(targetUser!.id),
+    //     enabled: !!targetUser,
+    // });
 
-    // 3️⃣ Update conversationMessages when messages are fetched
-    useEffect(() => {
-        if (messages && Array.isArray(messages.messages)) {
-            setConversationMessages(messages.messages);
-        } else {
-            setConversationMessages([]);
-        }
-    }, [messages]);
+    // Update conversationMessages when messages are fetched
+    // useEffect(() => {
+    //     if (messages && Array.isArray(messages.messages)) {
+    //         setConversationMessages(messages.messages);
+    //     } else {
+    //         setConversationMessages([]);
+    //     }
+    // }, [messages]);
 
-    // 4️⃣ Pusher subscription for live messages (primaoci vide instant)
+    // Pusher subscription for live messages
     useEffect(() => {
+        console.log("Logged user", loggedUser);
         if (!loggedUser) return;
 
-        const channel = pusher.subscribe(`chat.${loggedUser.id}`);
+        const channel = pusher.subscribe(`private-chat.${loggedUser.id}`);
 
-        const handleNewMessages = (data: any) => {
-            const incoming = data
-                ? Array.isArray(data.messages)
-                    ? data.messages
-                    : data.messages
-                    ? [data.messages]
-                    : data.message
-                    ? Array.isArray(data.message)
-                        ? data.message
-                        : [data.message]
-                    : []
-                : [];
+        channel.bind("MessageSentEvent", (data) => {
+            console.log("Live message:", data);
 
-            if (!incoming.length) return;
+            // TODO Jovan Fix sending msgs
 
-            setConversationMessages((prev) => {
-                const existingIds = new Set(prev.map((m) => m.id));
-                const toAdd = incoming.filter(
-                    (msg: any) => !existingIds.has(msg.id)
-                );
-
-                if (!toAdd.length) return prev;
-
-                // prikazujemo samo poruke relevantne za trenutno otvorenu konverzaciju
-                const relevantToCurrentConversation = toAdd.filter(
-                    (msg: any) =>
-                        (targetUser &&
-                            (msg.from_id === targetUser.id ||
-                                msg.to_id === targetUser.id)) ||
-                        (!targetUser && msg.to_id === loggedUser.id)
-                );
-
-                return relevantToCurrentConversation.length
-                    ? [...prev, ...relevantToCurrentConversation]
-                    : prev;
-            });
-        };
-
-        channel.bind("MessageSent", handleNewMessages);
+            setConversationMessages((prev) => [...prev, data]);
+        });
 
         return () => {
-            channel.unbind("MessageSent", handleNewMessages);
-            pusher.unsubscribe(`chat.${loggedUser.id}`);
+            channel.unbind_all();
+            pusher.unsubscribe(`private-chat.${loggedUser.id}`);
         };
-    }, [loggedUser, targetUser]);
+    }, [loggedUser, conversationMessages]);
 
-    // 5️⃣ Send message mutation sa optimističkim prikazom
+    console.log("Conversation messages", conversationMessages);
+
+    // Send message mutation
     const { mutate: sendMessageMutate, isLoading: sending } = useMutation({
         mutationFn: (payload: SendMessagePayload) => sendMessage(payload),
-        onMutate: (newMessage) => {
-            if (!targetUser) return;
-            const optimisticMessage = {
-                id: `temp-${Date.now()}`,
-                from_id: loggedUser?.id,
-                to_id: targetUser.id,
-                message: newMessage.message,
-                created_at: new Date().toISOString(),
-            };
-            setConversationMessages((prev) => [...prev, optimisticMessage]);
+        onSuccess: (data) => {
+            console.log("Message data POST Req sent: ", data);
+
+            if (!data || !data.messages || !targetUser) return;
+            const newMsg = data.data;
+            setConversationMessages((prev) =>
+                prev.some((m) => m.id === newMsg.id) ? prev : [...prev, newMsg]
+            );
+
             setMessage("");
         },
         onError: () => alert("Failed to send message"),
-        onSuccess: (data) => {
-            if (data && Array.isArray(data.messages)) {
-                setConversationMessages((prev) => {
-                    const withoutTemp = prev.filter(
-                        (m) => !`${m.id}`.startsWith("temp")
-                    );
-                    const filteredNew = data.messages.filter(
-                        (msg) => !withoutTemp.some((m) => m.id === msg.id)
-                    );
-                    return [...withoutTemp, ...filteredNew];
-                });
-            }
-            queryClient.invalidateQueries(["messages", targetUser?.id]);
-        },
     });
 
     function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
@@ -150,17 +106,16 @@ function Home() {
         });
     }
 
-    // 6️⃣ Loading / Error states
+    // Loading / Error states
     if (isLoading)
         return (
             <div className="loading-wrapper">
                 <Helix size="100" speed="2" color="#6941c6" />
             </div>
         );
-    if (error || isErrorMsg) return <p>{(error as Error).message}</p>;
-    if (!users) return <p>No data found.</p>;
+    if (error) return <p>{(error as Error).message}</p>;
+    if (!users) return <p>No users found.</p>;
 
-    // 7️⃣ Render
     return (
         <div className="chat-wrapper">
             {/* Users list */}
@@ -254,26 +209,28 @@ function Home() {
                 )}
 
                 {/* Input */}
-                <div className="conversation-input">
-                    <form
-                        onSubmit={handleSendMessage}
-                        className="message-input"
-                    >
-                        <input
-                            type="text"
-                            placeholder="Type your message..."
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                        />
-                        <button
-                            type="submit"
-                            className="btn-primary"
-                            disabled={sending}
+                {targetUser && (
+                    <div className="conversation-input">
+                        <form
+                            onSubmit={handleSendMessage}
+                            className="message-input"
                         >
-                            <span>{sending ? "Sending..." : "Send"}</span>
-                        </button>
-                    </form>
-                </div>
+                            <input
+                                type="text"
+                                placeholder="Type your message..."
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                            />
+                            <button
+                                type="submit"
+                                className="btn-primary"
+                                disabled={sending}
+                            >
+                                <span>{sending ? "Sending..." : "Send"}</span>
+                            </button>
+                        </form>
+                    </div>
+                )}
             </div>
         </div>
     );
