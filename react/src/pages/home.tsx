@@ -43,17 +43,17 @@ function Home() {
             <div className="chat-wrapper">
                 <div className="users">
                     <div className="heading-wrapper">
-                        <h2>
-                            {/* <button onClick={() => navigate("/")}>
-                                <span>Back</span>
-                            </button> */}
-                            Chat
-                        </h2>
+                        <h2>Chat</h2>
                     </div>
                     <div className="profile-wrapper">
                         <div className="img-wrapper">
                             <img
-                                src={`http://localhost:8000/storage/${loggedUser?.image_path}`}
+                                src={
+                                    loggedUser?.image_path ===
+                                    "images/default.png"
+                                        ? `http://localhost:8000/${loggedUser.image_path}`
+                                        : `http://localhost:8000/storage/${loggedUser?.image_path}`
+                                }
                                 alt="Profilna slika"
                             />
                         </div>
@@ -75,7 +75,12 @@ function Home() {
                             <div key={user.id} className="chat">
                                 <div className="user-img-wrapper">
                                     <img
-                                        src={`http://localhost:8000/${user?.image_path}`}
+                                        src={
+                                            user?.image_path ===
+                                            "images/default.png"
+                                                ? `http://localhost:8000/${user.image_path}`
+                                                : `http://localhost:8000/storage/${user.image_path}`
+                                        }
                                         alt="Profilna slika"
                                     />
                                 </div>
@@ -90,35 +95,101 @@ function Home() {
                         ))}
                     </div>
                 </div>
-                <div className="conversation">
-                    {/* Poruke primljene od drugih korisnika */}
-                    <div className="message received">
-                        <div className="message-text">
-                            Hey! How are you doing today?
-                        </div>
-                        <div className="message-time">11:05 AM</div>
-                    </div>
+                <div className="conversation-wrapper">
+                    <section className="conversation">
+                        <h3>Conversation with username</h3>
 
-                    <div className="message received">
-                        <div className="message-text">
-                            Are you free for a quick call?
+                        <div className="message from-me">
+                            <div className="bubble">Ćao! Kako si?</div>
+                            <span className="time">04.10.2025. 12:30</span>
                         </div>
-                        <div className="message-time">11:06 AM</div>
-                    </div>
 
-                    {/* Poruke koje šalje korisnik */}
-                    <div className="message sent">
-                        <div className="message-text">
-                            Hi! I’m good, thanks. Sure, I can talk now.
+                        <div className="message from-them">
+                            <div className="bubble">
+                                Hej! Super sam, hvala. A ti?
+                            </div>
+                            <span className="time">04.10.2025. 12:31</span>
                         </div>
-                        <div className="message-time">11:07 AM</div>
-                    </div>
 
-                    <div className="message sent">
-                        <div className="message-text">
-                            Where should we meet?
+                        <div className="message from-me">
+                            <div className="bubble">
+                                I ja sam dobro. Kad se viđamo?
+                            </div>
+                            <span className="time">04.10.2025. 12:32</span>
                         </div>
-                        <div className="message-time">11:08 AM</div>
+
+                        <div className="message from-them">
+                            <div className="bubble">Može sutra popodne 😊</div>
+                            <span className="time">04.10.2025. 12:33</span>
+                        </div>
+                        <div className="message from-me">
+                            <div className="bubble">Ćao! Kako si?</div>
+                            <span className="time">04.10.2025. 12:30</span>
+                        </div>
+
+                        <div className="message from-them">
+                            <div className="bubble">
+                                Hej! Super sam, hvala. A ti?
+                            </div>
+                            <span className="time">04.10.2025. 12:31</span>
+                        </div>
+
+                        <div className="message from-me">
+                            <div className="bubble">
+                                I ja sam dobro. Kad se viđamo?
+                            </div>
+                            <span className="time">04.10.2025. 12:32</span>
+                        </div>
+
+                        <div className="message from-them">
+                            <div className="bubble">Može sutra popodne 😊</div>
+                            <span className="time">04.10.2025. 12:33</span>
+                        </div>
+                        <div className="message from-me">
+                            <div className="bubble">Ćao! Kako si?</div>
+                            <span className="time">04.10.2025. 12:30</span>
+                        </div>
+
+                        <div className="message from-them">
+                            <div className="bubble">
+                                Hej! Super sam, hvala. A ti?
+                            </div>
+                            <span className="time">04.10.2025. 12:31</span>
+                        </div>
+
+                        <div className="message from-me">
+                            <div className="bubble">
+                                I ja sam dobro. Kad se viđamo?
+                            </div>
+                            <span className="time">04.10.2025. 12:32</span>
+                        </div>
+
+                        <div className="message from-them">
+                            <div className="bubble">Može sutra popodne 😊</div>
+                            <span className="time">04.10.2025. 12:33</span>
+                        </div>
+                        <div className="message from-me">
+                            <div className="bubble">Ćao! Kako si?</div>
+                            <span className="time">04.10.2025. 12:30</span>
+                        </div>
+
+                        <div className="message from-them">
+                            <div className="bubble">
+                                Hej! Super sam, hvala. A ti?
+                            </div>
+                            <span className="time">04.10.2025. 12:31</span>
+                        </div>
+                    </section>
+                    <div className="conversation-input">
+                        <form className="message-input">
+                            <input
+                                type="text"
+                                placeholder="Type your message..."
+                            />
+                            <button type="submit" className="btn-primary">
+                                <span>Send</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

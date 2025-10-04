@@ -148,71 +148,89 @@ $border-gray: #ddd;
         }
     }
 
-    .conversation {
-        display: flex;
-        flex-direction: column;
-        background: $light-gray;
-        padding: 20px;
-        overflow-y: scroll;
-        .message {
-            max-width: 60%;
-            padding: 10px 15px;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            word-wrap: break-word;
+    .conversation-wrapper {
+        position: relative;
+        .conversation {
             display: flex;
             flex-direction: column;
-            position: relative;
+            gap: 1rem;
+            padding: 1.5rem;
+            background-color: #f7f7f9;
+            border-radius: 1rem;
+            margin: 0 auto;
+            overflow-y: scroll;
+            height: 100vh;
+            width: 100%;
 
-            &.received {
-                background: #ffffff;
-                align-self: flex-start;
-                border-top-left-radius: 5px;
-                border-top-right-radius: 15px;
-                border-bottom-right-radius: 15px;
-                border-bottom-left-radius: 15px;
-                .message-time {
-                    font-size: 0.75rem;
-                    color: gray;
-                    align-self: flex-end;
-                }
+            @media (max-width: 768px) {
+                padding: 0;
             }
 
-            &.sent {
-                background: $primary-color;
-                color: #ffffff;
-                align-self: flex-end;
-                border-top-left-radius: 15px;
-                border-top-right-radius: 5px;
-                border-bottom-right-radius: 15px;
-                border-bottom-left-radius: 15px;
-                .message-time {
+            .message {
+                display: flex;
+                flex-direction: column;
+                max-width: 70%;
+                position: relative;
+                .bubble {
+                    padding: 0.75rem 1rem;
+                    border-radius: 1.2rem;
+                    font-size: 0.95rem;
+                    line-height: 1.4;
+                    word-wrap: break-word;
+                }
+
+                .time {
                     font-size: 0.75rem;
-                    color: white;
+                    color: #999;
+                    margin-top: 0.25rem;
                     align-self: flex-end;
                 }
-            }
 
-            .message-text {
-                font-size: 0.95rem;
-                line-height: 1.4;
-                margin-bottom: 5px;
+                &.from-me {
+                    align-self: flex-end;
+
+                    .bubble {
+                        background-color: #7f56d9;
+                        color: #fff;
+                        border-bottom-right-radius: 0.3rem;
+                    }
+                }
+
+                &.from-them {
+                    align-self: flex-start;
+
+                    .bubble {
+                        background-color: #e5e5ea;
+                        color: #333;
+                        border-bottom-left-radius: 0.3rem;
+                    }
+                }
             }
         }
-
-        .chat-input {
-            display: flex;
-            margin-top: auto;
-            padding-top: 10px;
+        .conversation-input {
+            margin: 0 auto;
+            position: absolute;
             bottom: 0;
-            input {
-                flex: 1;
-                padding: 10px 15px;
-                border-radius: 8px;
-                border: 1px solid $border-gray;
-                outline: none;
-                font-size: 0.9rem;
-                margin-right: 10px;
+            left: 16px;
+            right: 16px;
+            bottom: 16px;
+            .message-input {
+                display: flex;
+                margin-top: 1rem;
+                flex-wrap: wrap;
+
+                input {
+                    flex: 1;
+                    padding: 0.6rem 1rem;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    font-size: 1rem;
+                    outline: none;
+                    margin-right: 0.5rem;
+                    @media (max-width: 768px) {
+                        margin: 0;
+                    }
+                }
             }
         }
     }
