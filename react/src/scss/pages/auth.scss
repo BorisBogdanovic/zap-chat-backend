@@ -18,23 +18,22 @@
         }
     }
     .form-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        text-align: center;
+        margin-block: auto;
+        margin-bottom: 300px;
         padding: 30px;
         background-color: #ffffff;
         .logo {
             text-align: center;
 
             img {
-                width: 170px;
-                height: 170px;
+                width: 150px;
+                height: 150px;
                 object-fit: cover;
                 cursor: pointer;
             }
         }
         .form-heading {
-            // margin-top: 24px;
             color: #101828;
             font-size: 30px;
             line-height: 38px;
@@ -43,7 +42,7 @@
         }
         .form-underheading {
             margin-top: 12px;
-            margin-bottom: 32px;
+            margin-bottom: 20px;
             font-size: 16;
             line-height: 24px;
             font-weight: 100;
@@ -52,7 +51,7 @@
         }
         .input-wrapper {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 12px;
             label {
                 font-weight: 500;
                 font-size: 14px;
@@ -80,15 +79,17 @@
                 }
                 input {
                     border: none;
+                    width: 100%;
                 }
             }
         }
         .form-link-text {
+            cursor: pointer;
             font-weight: 500;
             font-size: 14px;
             line-height: 20px;
             color: #6941c6;
-            margin-top: 20px;
+            margin-top: 14px;
             margin-bottom: 8px;
         }
     }

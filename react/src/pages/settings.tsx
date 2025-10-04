@@ -192,11 +192,11 @@ function Settings() {
                     </div>
 
                     <div className="form-actions">
-                        <button type="submit" className="save-btn">
-                            Save
+                        <button type="submit" className="btn-primary">
+                            <span>Save</span>
                         </button>
-                        <button type="button" className="cancel-btn">
-                            Cancel
+                        <button type="button" className="btn-secondary">
+                            <span>Cancel</span>
                         </button>
                     </div>
                 </form>
