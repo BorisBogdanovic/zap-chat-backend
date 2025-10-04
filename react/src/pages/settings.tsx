@@ -101,9 +101,15 @@ function Settings() {
                 <div className="profile-header">
                     <div className="img-wrapper">
                         <img
-                            src={`http://localhost:8000/storage/${
-                                loggedUser?.image_path
-                            }?t=${Date.now()}`}
+                            src={
+                                loggedUser?.image_path === "images/default.png"
+                                    ? `http://localhost:8000/${
+                                          loggedUser.image_path
+                                      }?t=${Date.now()}`
+                                    : `http://localhost:8000/storage/${
+                                          loggedUser?.image_path
+                                      }?t=${Date.now()}`
+                            }
                             alt="Profilna slika"
                         />
 
