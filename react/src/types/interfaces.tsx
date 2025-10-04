@@ -10,3 +10,8 @@ export interface PrivateRouteProps {
 export interface PublicRouteProps {
     children: ReactNode;
 }
+
+export interface SendMessagePayload {
+    to_id: number; // ID korisnika kojem šalješ
+    message: string;
+}
