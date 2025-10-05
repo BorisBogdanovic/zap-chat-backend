@@ -37,24 +37,24 @@ function Home() {
     });
 
     // Fetch messages only on targetUser change
-    // const {
-    //     data: messages,
-    //     isLoading: isLoadingMsg,
-    //     error: isErrorMsg,
-    // } = useQuery({
-    //     queryKey: ["messages", targetUser?.id],
-    //     queryFn: () => fetchMessages(targetUser!.id),
-    //     enabled: !!targetUser,
-    // });
+    const {
+        data: messages,
+        isLoading: isLoadingMsg,
+        error: isErrorMsg,
+    } = useQuery({
+        queryKey: ["messages", targetUser?.id],
+        queryFn: () => fetchMessages(targetUser!.id),
+        enabled: !!targetUser,
+    });
 
     // Update conversationMessages when messages are fetched
-    // useEffect(() => {
-    //     if (messages && Array.isArray(messages.messages)) {
-    //         setConversationMessages(messages.messages);
-    //     } else {
-    //         setConversationMessages([]);
-    //     }
-    // }, [messages]);
+    useEffect(() => {
+        if (messages && Array.isArray(messages.messages)) {
+            setConversationMessages(messages.messages);
+        } else {
+            setConversationMessages([]);
+        }
+    }, [messages]);
 
     // Pusher subscription for live messages
     useEffect(() => {
@@ -66,7 +66,10 @@ function Home() {
         channel.bind("MessageSentEvent", (data) => {
             console.log("Live message:", data);
 
-            // TODO Jovan Fix sending msgs
+            if (data.from_id === loggedUser.id) return;
+
+            // Ignoriši ako poruka nije za trenutnog target user-a
+            if (targetUser && data.from_id !== targetUser.id) return;
 
             setConversationMessages((prev) => [...prev, data]);
         });
@@ -75,7 +78,7 @@ function Home() {
             channel.unbind_all();
             pusher.unsubscribe(`private-chat.${loggedUser.id}`);
         };
-    }, [loggedUser, conversationMessages]);
+    }, [loggedUser, targetUser]);
 
     console.log("Conversation messages", conversationMessages);
 
@@ -85,7 +88,7 @@ function Home() {
         onSuccess: (data) => {
             console.log("Message data POST Req sent: ", data);
 
-            if (!data || !data.messages || !targetUser) return;
+            if (!data || !data.data || !targetUser) return;
             const newMsg = data.data;
             setConversationMessages((prev) =>
                 prev.some((m) => m.id === newMsg.id) ? prev : [...prev, newMsg]
@@ -185,11 +188,12 @@ function Home() {
                 {targetUser ? (
                     <section className="conversation">
                         <h3>Conversation with {targetUser.name}</h3>
+
                         {conversationMessages.map((msg) => (
                             <div
                                 key={
-                                    msg.id ||
-                                    `${msg.from_id}-${msg.to_id}-${Date.now()}`
+                                    msg.id ??
+                                    `${msg.from_id}-${msg.to_id}-${msg.message}`
                                 }
                                 className={`message ${
                                     msg.from_id === loggedUser?.id
@@ -199,7 +203,12 @@ function Home() {
                             >
                                 <div className="bubble">{msg.message}</div>
                                 <span className="time">
-                                    {new Date(msg.created_at).toLocaleString()}
+                                    {new Date(
+                                        msg.created_at ?? Date.now()
+                                    ).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })}
                                 </span>
                             </div>
                         ))}

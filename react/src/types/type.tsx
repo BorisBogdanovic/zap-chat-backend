@@ -55,3 +55,12 @@ export type ResetUserObj = {
     password: string;
     password_confirmation: string;
 };
+
+// Message
+export type Message = {
+    id: number | string;
+    from_id: number;
+    to_id: number;
+    message: string;
+    isLocal?: boolean;
+};
