@@ -58,9 +58,32 @@ export type ResetUserObj = {
 
 // Message
 export type Message = {
-    id: number | string;
+    data: {
+        created_at: string;
+        from_id: number;
+        id: number;
+        message: string;
+        read_at: null;
+        to_id: number;
+        updated_at: string;
+    };
+    status: string;
+};
+
+// Chat Message
+export type ChatMessage = {
+    created_at: string;
     from_id: number;
-    to_id: number;
+    id: number;
     message: string;
-    isLocal?: boolean;
+    read_at: null;
+    to_id: number;
+    updated_at: string;
+};
+
+// Live Message
+export type LiveMessage = {
+    from_id: number;
+    message: string;
+    to_id: number;
 };

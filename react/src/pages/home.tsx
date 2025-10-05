@@ -7,13 +7,20 @@ import {
     fetchMessages,
     sendMessage,
 } from "../services/chatServices";
-import { User } from "../types/type";
-import { useEffect, useState } from "react";
+import {
+    ChatMessage,
+    LiveMessage,
+    LoggedUser,
+    Message,
+    User,
+} from "../types/type";
+import { useEffect, useRef, useState } from "react";
 import { useDebounce } from "../hooks/useDebaunce";
 import { Helix } from "ldrs/react";
-import echo, { pusher } from "../pusherClient";
+import { pusher } from "../pusherClient";
 import { SendMessagePayload } from "../types/interfaces";
 import { useMutation } from "@tanstack/react-query";
+import EmptyConversation from "../components/emptyState";
 
 function Home() {
     const loggedUser = useSelector(
@@ -23,7 +30,13 @@ function Home() {
     const [users_search, setUsersSearch] = useState("");
     const debouncedSearch = useDebounce(users_search, 2000);
     const [message, setMessage] = useState("");
-    const [conversationMessages, setConversationMessages] = useState<any[]>([]);
+    const [conversationMessages, setConversationMessages] = useState<
+        ChatMessage[]
+    >([]);
+
+    // Auto scroll
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
 
     // Fetch users
     const {
@@ -39,8 +52,8 @@ function Home() {
     // Fetch messages only on targetUser change
     const {
         data: messages,
-        isLoading: isLoadingMsg,
-        error: isErrorMsg,
+        // isLoading: isLoadingMsg,
+        // error: isErrorMsg,
     } = useQuery({
         queryKey: ["messages", targetUser?.id],
         queryFn: () => fetchMessages(targetUser!.id),
@@ -56,14 +69,34 @@ function Home() {
         }
     }, [messages]);
 
+    // All messages on page load. ASK BE FOR ALL MESSAGES!!!
+    useEffect(() => {
+        if (messages && Array.isArray(messages.messages)) {
+            // Dodajemo samo nove poruke koje još nisu u allMessages
+            setAllMessages((prev) => {
+                const newMsgs = messages.messages.filter(
+                    (msg: ChatMessage) => !prev.some((m) => m.id === msg.id)
+                );
+
+                return [...prev, ...newMsgs];
+            });
+        }
+    }, [messages]);
+
+    // Scroll everytime new msg appears (conversationMessages changes)
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [conversationMessages]);
+
     // Pusher subscription for live messages
     useEffect(() => {
-        console.log("Logged user", loggedUser);
         if (!loggedUser) return;
 
         const channel = pusher.subscribe(`private-chat.${loggedUser.id}`);
 
-        channel.bind("MessageSentEvent", (data) => {
+        channel.bind("MessageSentEvent", (data: LiveMessage) => {
             console.log("Live message:", data);
 
             if (data.from_id === loggedUser.id) return;
@@ -71,7 +104,7 @@ function Home() {
             // Ignoriši ako poruka nije za trenutnog target user-a
             if (targetUser && data.from_id !== targetUser.id) return;
 
-            setConversationMessages((prev) => [...prev, data]);
+            setConversationMessages((prev) => [...prev, data as ChatMessage]);
         });
 
         return () => {
@@ -83,9 +116,9 @@ function Home() {
     console.log("Conversation messages", conversationMessages);
 
     // Send message mutation
-    const { mutate: sendMessageMutate, isLoading: sending } = useMutation({
+    const { mutate: sendMessageMutate, isPending: sending } = useMutation({
         mutationFn: (payload: SendMessagePayload) => sendMessage(payload),
-        onSuccess: (data) => {
+        onSuccess: (data: Message) => {
             console.log("Message data POST Req sent: ", data);
 
             if (!data || !data.data || !targetUser) return;
@@ -109,6 +142,14 @@ function Home() {
         });
     }
 
+    // Image src helper
+    function getUserImageUrl(user: LoggedUser | User | null | undefined) {
+        if (!user?.image_path) return "/default-avatar.png";
+        return user.image_path === "images/default.png"
+            ? `http://localhost:8000/${user.image_path}`
+            : `http://localhost:8000/storage/${user.image_path}`;
+    }
+
     // Loading / Error states
     if (isLoading)
         return (
@@ -118,6 +159,8 @@ function Home() {
         );
     if (error) return <p>{(error as Error).message}</p>;
     if (!users) return <p>No users found.</p>;
+    console.log("Logged user", loggedUser);
+    console.log("Targer user", targetUser);
 
     return (
         <div className="chat-wrapper">
@@ -154,67 +197,118 @@ function Home() {
                 </div>
 
                 <div className="chats">
-                    {users.data.map((user: User) => (
-                        <div
-                            onClick={() => setTargetUser(user)}
-                            key={user.id}
-                            className="chat"
-                        >
-                            <div className="user-img-wrapper">
-                                <img
-                                    src={
-                                        user?.image_path ===
-                                        "images/default.png"
-                                            ? `http://localhost:8000/${user.image_path}`
-                                            : `http://localhost:8000/storage/${user.image_path}`
-                                    }
-                                    alt="Profilna slika"
-                                />
-                            </div>
-                            <div className="text-wrapper">
-                                <div className="chat-name">{user.name}</div>
-                                <div className="chat-text">
-                                    Some text she sends to...
+                    {users.data.map((user: User) => {
+                        // Uzmi poslednju poruku za ovog user-a iz allMessages
+                        const lastMessage = allMessages
+                            .filter(
+                                (msg) =>
+                                    (msg.from_id === loggedUser?.id &&
+                                        msg.to_id === user.id) ||
+                                    (msg.from_id === user.id &&
+                                        msg.to_id === loggedUser?.id)
+                            )
+                            .sort(
+                                (a, b) =>
+                                    new Date(b.created_at).getTime() -
+                                    new Date(a.created_at).getTime()
+                            )[0];
+
+                        return (
+                            <div
+                                onClick={() => setTargetUser(user)}
+                                key={user.id}
+                                className="chat"
+                            >
+                                <div className="user-img-wrapper">
+                                    <img
+                                        src={
+                                            user?.image_path ===
+                                            "images/default.png"
+                                                ? `http://localhost:8000/${user.image_path}`
+                                                : `http://localhost:8000/storage/${user.image_path}`
+                                        }
+                                        alt="Profilna slika"
+                                    />
+                                </div>
+                                <div className="text-wrapper">
+                                    <div className="chat-name">{user.name}</div>
+                                    <div className="chat-text">
+                                        {lastMessage?.message ||
+                                            "No messages yet"}
+                                    </div>
+                                </div>
+                                <div className="chat-time">
+                                    {lastMessage
+                                        ? new Date(
+                                              lastMessage.created_at
+                                          ).toLocaleTimeString([], {
+                                              hour: "2-digit",
+                                              minute: "2-digit",
+                                          })
+                                        : ""}
                                 </div>
                             </div>
-                            <div className="chat-time">11:15</div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
 
             {/* Conversation */}
             <div className="conversation-wrapper">
                 {targetUser ? (
-                    <section className="conversation">
-                        <h3>Conversation with {targetUser.name}</h3>
+                    <>
+                        {" "}
+                        <div className="conversation-header">
+                            <h3>Conversation with {targetUser.name}</h3>
+                        </div>
+                        <section className="conversation">
+                            {conversationMessages.map((msg) => {
+                                const isFromMe = msg.from_id === loggedUser?.id;
+                                const imageSrc = isFromMe
+                                    ? getUserImageUrl(loggedUser)
+                                    : getUserImageUrl(targetUser);
 
-                        {conversationMessages.map((msg) => (
-                            <div
-                                key={
-                                    msg.id ??
-                                    `${msg.from_id}-${msg.to_id}-${msg.message}`
-                                }
-                                className={`message ${
-                                    msg.from_id === loggedUser?.id
-                                        ? "from-me"
-                                        : "from-them"
-                                }`}
-                            >
-                                <div className="bubble">{msg.message}</div>
-                                <span className="time">
-                                    {new Date(
-                                        msg.created_at ?? Date.now()
-                                    ).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                    })}
-                                </span>
-                            </div>
-                        ))}
-                    </section>
+                                return (
+                                    <div
+                                        key={
+                                            msg.id ??
+                                            `${msg.from_id}-${msg.to_id}-${msg.message}`
+                                        }
+                                        className={`message ${
+                                            isFromMe ? "from-me" : "from-them"
+                                        }`}
+                                    >
+                                        <div className="bubble-avatar">
+                                            <img
+                                                src={imageSrc}
+                                                alt="Profilna slika"
+                                                className="message-avatar"
+                                            />
+                                        </div>
+                                        <div className="bubble-wrapper">
+                                            <div className="bubble">
+                                                <div className="bubble-msg">
+                                                    {" "}
+                                                    {msg.message}
+                                                </div>
+                                            </div>
+                                            <span className="time">
+                                                {new Date(
+                                                    msg.created_at ?? Date.now()
+                                                ).toLocaleTimeString([], {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            <div ref={messagesEndRef} />
+                        </section>
+                    </>
                 ) : (
-                    <h2>Select conversation</h2>
+                    <EmptyConversation />
                 )}
 
                 {/* Input */}
