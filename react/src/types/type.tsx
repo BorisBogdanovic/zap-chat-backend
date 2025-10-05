@@ -87,3 +87,31 @@ export type LiveMessage = {
     message: string;
     to_id: number;
 };
+
+// Fetch Messages
+export type Messages = {
+    contact: {
+        created_at: string;
+        email: string;
+        email_verified_at: null;
+        id: number;
+        image_path: string;
+        is_admin: number;
+        last_name: string;
+        name: string;
+        updated_at: string;
+        username: string;
+    };
+    messages: [
+        {
+            created_at: string;
+            from_id: number;
+            id: number;
+            message: string;
+            read_at: null;
+            to_id: number;
+            updated_at: string;
+        }
+    ];
+    status: string;
+};
