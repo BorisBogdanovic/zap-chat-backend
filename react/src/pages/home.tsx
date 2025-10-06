@@ -31,8 +31,9 @@ function Home() {
 
     // Update conversationMessages when messages are fetched
     useEffect(() => {
-        if (messages && Array.isArray(messages.messages)) {
-            setConversationMessages(messages.messages);
+        // console.log("Messages", messages);
+        if (messages && Array.isArray(messages.data.messages)) {
+            setConversationMessages(messages.data.messages);
         } else {
             setConversationMessages([]);
         }

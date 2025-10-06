@@ -30,11 +30,11 @@ function UsersList({
     // All messages on page load. ASK BE FOR ALL MESSAGES!!!
     // We use for now messages from fetch that require targetUser id
     useEffect(() => {
-        if (messages && Array.isArray(messages.messages)) {
+        if (messages && Array.isArray(messages.data.messages)) {
             // Dodajemo samo nove poruke koje još nisu u allMessages
             // console.log(messages);
             setAllMessages((prev) => {
-                const newMsgs = messages.messages.filter(
+                const newMsgs = messages.data.messages.filter(
                     (msg: ChatMessage) => !prev.some((m) => m.id === msg.id)
                 );
 

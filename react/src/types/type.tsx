@@ -73,10 +73,16 @@ export type Message = {
 // Chat Message
 export type ChatMessage = {
     created_at: string;
+    from: {
+        id: number;
+        image_path: string;
+        name: string;
+    };
     from_id: number;
     id: number;
     message: string;
     read_at: null;
+    to: { id: number; image_path: string; name: string };
     to_id: number;
     updated_at: string;
 };
@@ -90,28 +96,21 @@ export type LiveMessage = {
 
 // Fetch Messages
 export type Messages = {
-    contact: {
-        created_at: string;
-        email: string;
-        email_verified_at: null;
-        id: number;
-        image_path: string;
-        is_admin: number;
-        last_name: string;
-        name: string;
-        updated_at: string;
-        username: string;
-    };
-    messages: [
-        {
+    data: {
+        contact: {
             created_at: string;
-            from_id: number;
+            email: string;
+            email_verified_at: null;
             id: number;
-            message: string;
-            read_at: null;
-            to_id: number;
+            image_path: string;
+            is_admin: number;
+            last_name: string;
+            name: string;
             updated_at: string;
-        }
-    ];
+            username: string;
+        };
+        messages: ChatMessage[];
+    };
+    message: string;
     status: string;
 };
