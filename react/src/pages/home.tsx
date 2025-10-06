@@ -4,7 +4,7 @@ import { RootState } from "../redux/store";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMessages } from "../services/chatServices";
 import { ChatMessage, LiveMessage, User } from "../types/type";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { pusher } from "../pusherClient";
 import EmptyConversation from "../components/emptyState";
 import UsersList from "./home-components/usersList";
@@ -20,6 +20,8 @@ function Home() {
     const [conversationMessages, setConversationMessages] = useState<
         ChatMessage[]
     >([]);
+
+    const messagesTopRef = useRef<HTMLDivElement | null>(null);
 
     // Fetch messages only on targetUser change
     const { data: messages } = useQuery({
@@ -57,18 +59,28 @@ function Home() {
         };
     }, [loggedUser, targetUser]);
 
+    // Scroll to top handler
+    function scrollToTop() {
+        if (messagesTopRef.current) {
+            messagesTopRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }
+
     // console.log("Conversation messages", conversationMessages);
     // console.log("Logged user", loggedUser);
     // console.log("Targer user", targetUser);
 
     return (
         <div className="chat-wrapper">
-            {/* Users list */}
-            <UsersList
-                loggedUser={loggedUser}
-                setTargetUser={setTargetUser}
-                messages={messages}
-            />
+            <div>
+                <div ref={messagesTopRef} />
+                {/* Users list */}
+                <UsersList
+                    loggedUser={loggedUser}
+                    setTargetUser={setTargetUser}
+                    messages={messages}
+                />
+            </div>
 
             {/* Conversation */}
             <div className="conversation-wrapper">
@@ -78,6 +90,7 @@ function Home() {
                             conversationMessages={conversationMessages}
                             targetUser={targetUser}
                             loggedUser={loggedUser}
+                            scrollToTop={scrollToTop}
                         />
                     </>
                 ) : (

@@ -38,4 +38,5 @@ export interface ConversationProps {
     conversationMessages: ChatMessage[];
     targetUser: User | null;
     loggedUser: LoggedUser | null;
+    scrollToTop: () => void;
 }

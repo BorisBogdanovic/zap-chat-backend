@@ -1,9 +1,43 @@
 import { useState } from "react";
 import MobileModal from "./mobileModal";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { logoutUser } from "../services/authServices";
+import { logoutUserFromReduxAndLS } from "../redux/slice";
+import { useDispatch } from "react-redux";
 
 function MobileHeader() {
     const [mobModal, setMobModal] = useState(false);
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const dispatch = useDispatch();
+
+    // HTTP POST
+    const logoutUserMutation = useMutation({
+        mutationFn: logoutUser,
+        onSuccess: (data) => {
+            console.log("Temporary use because of build", data);
+            // Clear localStorage
+            localStorage.removeItem("loggedInUser");
+            localStorage.removeItem("auth_token");
+
+            // Redux
+            dispatch(logoutUserFromReduxAndLS());
+
+            // Navigation
+            navigate("/login");
+        },
+        onError: (err) => {
+            console.log("Temporary use because of build", err);
+
+            alert("Logout failed!");
+        },
+    });
+
+    function handleLogout() {
+        logoutUserMutation.mutate();
+        queryClient.clear();
+    }
     return (
         <>
             <div className="mobille-header-wrapper">
@@ -45,6 +79,14 @@ function MobileHeader() {
                                     <span>Settings</span>
                                 </div>
                             </NavLink>
+                            <div className="nav-item">
+                                <span onClick={handleLogout}>Logout</span>
+                                {/* <img
+                                    onClick={handleLogout}
+                                    src="/icons/logout-icon.png"
+                                    alt="logout icon"
+                                /> */}
+                            </div>
                         </div>
                     </div>
                 </MobileModal>

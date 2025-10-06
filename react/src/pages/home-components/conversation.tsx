@@ -6,6 +6,7 @@ function Conversation({
     conversationMessages,
     targetUser,
     loggedUser,
+    scrollToTop,
 }: ConversationProps) {
     // Auto scroll
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -16,6 +17,7 @@ function Conversation({
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [conversationMessages]);
+
     // Image src helper
     function getUserImageUrl(user: LoggedUser | User | null | undefined) {
         if (!user?.image_path) return "/default-avatar.png";
@@ -26,7 +28,12 @@ function Conversation({
     return (
         <>
             <div className="conversation-header">
-                <h3>Conversation with {targetUser?.name}</h3>
+                <h3>
+                    <span className="top-icon-wrapper" onClick={scrollToTop}>
+                        <img src="icons/top-arrow-icon.png" alt="top-arrow" />
+                    </span>{" "}
+                    Conversation with {targetUser?.name}
+                </h3>
             </div>
             <section className="conversation">
                 {conversationMessages.map((msg: ChatMessage) => {

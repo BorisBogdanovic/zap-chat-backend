@@ -13,6 +13,10 @@ $border-gray: #ddd;
     height: 100vh;
     font-family: Arial, sans-serif;
 
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+
     .users {
         // width: 30%;
         background: $white;
@@ -20,6 +24,10 @@ $border-gray: #ddd;
         display: flex;
         flex-direction: column;
         height: 100vh;
+
+        // @media (max-width: 768px) {
+        //     height: auto;
+        // }
 
         .heading-wrapper {
             padding: 15px 20px;
@@ -93,7 +101,7 @@ $border-gray: #ddd;
 
         .chats {
             flex: 1;
-            overflow-y: scroll;
+            overflow-y: auto;
 
             .chat {
                 display: flex;
@@ -136,7 +144,7 @@ $border-gray: #ddd;
                         color: $dark-gray;
                         overflow: hidden;
                         text-overflow: ellipsis;
-                        white-space: nowrap;
+                        white-space: wrap;
                     }
                 }
 
@@ -152,6 +160,10 @@ $border-gray: #ddd;
     .conversation-wrapper {
         position: relative;
         text-align: center;
+
+        // @media (max-width: 768px) {
+        //     display: none;
+        // }
 
         .conversation-header {
             position: sticky;
@@ -169,6 +181,19 @@ $border-gray: #ddd;
                 font-size: 1.2rem;
                 font-weight: 600;
                 color: #111111;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                .top-icon-wrapper {
+                    margin-right: 10px;
+                    img {
+                        width: 40px;
+                        height: 40px;
+                        object-fit: cover;
+                        cursor: pointer;
+                    }
+                }
             }
         }
 
@@ -181,7 +206,9 @@ $border-gray: #ddd;
             overflow-y: auto;
             background: #f8f8fb;
             border-radius: 0.5rem;
-
+            @media (max-width: 768px) {
+                padding: 1rem 1rem 7rem 1rem;
+            }
             .message {
                 display: flex;
                 align-items: flex-end;
@@ -273,11 +300,19 @@ $border-gray: #ddd;
                     border: none;
                     border-radius: 8px !important;
                     flex: 1;
-                    padding: 0.6rem 1rem;
+                    padding: 1rem 1rem;
                     font-size: 1rem;
                     outline: none;
+                    width: 100%;
+
                     @media (max-width: 768px) {
-                        margin: 0;
+                        width: 100%;
+                    }
+                }
+
+                button {
+                    @media (max-width: 768px) {
+                        width: 100%;
                     }
                 }
             }
