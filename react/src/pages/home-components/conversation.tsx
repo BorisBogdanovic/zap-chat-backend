@@ -18,7 +18,7 @@ function Conversation({
         }
     }, [conversationMessages]);
 
-    // Image src helper
+    // User convo image src helper function
     function getUserImageUrl(user: LoggedUser | User | null | undefined) {
         if (!user?.image_path) return "/default-avatar.png";
         return user.image_path === "images/default.png"
@@ -29,9 +29,6 @@ function Conversation({
         <>
             <div className="conversation-header">
                 <h3>
-                    {/* <span className="top-icon-wrapper">
-                        <img src="icons/top-arrow-icon.png" alt="top-arrow" />
-                    </span>{" "} */}
                     <div className="back-button-mobile">
                         <button onClick={() => setShowConversation(false)}>
                             ←
@@ -42,6 +39,7 @@ function Conversation({
             </div>
             <section className="conversation">
                 {conversationMessages.map((msg: ChatMessage) => {
+                    // User profile imgs finder
                     const isFromMe = msg.from_id === loggedUser?.id;
                     const imageSrc = isFromMe
                         ? getUserImageUrl(loggedUser)

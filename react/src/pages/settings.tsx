@@ -2,7 +2,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editUser, uploadAvatar } from "../services/settingsServices";
 import { EditedUser } from "../types/type";
 import { updateLoggedInUser } from "../redux/slice";

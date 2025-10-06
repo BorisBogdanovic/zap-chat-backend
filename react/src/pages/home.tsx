@@ -51,6 +51,7 @@ function Home() {
             // Ignore if msg is not for target user
             if (targetUser && data.from_id !== targetUser.id) return;
 
+            // Remove duplicates (optimistic msg)
             setConversationMessages((prev) =>
                 prev.map((m) =>
                     String(m.id).startsWith("temp") &&

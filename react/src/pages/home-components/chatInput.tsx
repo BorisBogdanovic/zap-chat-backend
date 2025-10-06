@@ -17,18 +17,6 @@ function ChatInput({
             console.log("Message data POST Req sent: ", data);
 
             if (!data || !data.data || !targetUser) return;
-            const newMsg = data.data;
-
-            setConversationMessages((prev) =>
-                prev.map((m) =>
-                    String(m.id).startsWith("temp") &&
-                    m.message === newMsg.message &&
-                    m.from_id === newMsg.from_id
-                        ? { ...m, ...newMsg, confirmed: true } // update samo polja
-                        : m
-                )
-            );
-
             setMessage("");
         },
         onError: () => alert("Failed to send message"),
@@ -38,7 +26,7 @@ function ChatInput({
         e.preventDefault();
         if (!targetUser || !message.trim()) return;
 
-        // Instant msg show
+        // Instant msg show, replaced with pusher live msg
         const optimisticMessage: ChatMessage = {
             id: `temp-${Date.now()}`,
             from_id: loggedUser?.id,
