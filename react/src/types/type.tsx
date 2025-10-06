@@ -80,17 +80,18 @@ export type Message = {
 export type ChatMessage = {
     created_at: string;
     from: {
-        id: number;
-        image_path: string;
-        name: string;
+        id: number | undefined;
+        image_path: string | undefined;
+        name: string | undefined;
     };
-    from_id: number;
-    id: number;
+    from_id: number | undefined;
+    id: number | string;
     message: string;
     read_at: null;
     to: { id: number; image_path: string; name: string };
     to_id: number;
     updated_at: string;
+    confirmed?: boolean;
 };
 
 // Live Message

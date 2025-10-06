@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { sendMessage } from "../../services/chatServices";
 import { ChatInputProps, SendMessagePayload } from "../../types/interfaces";
-import { Message } from "../../types/type";
+import { ChatMessage, Message } from "../../types/type";
 
 function ChatInput({
+    loggedUser,
     targetUser,
     message,
     setMessage,
@@ -17,8 +18,15 @@ function ChatInput({
 
             if (!data || !data.data || !targetUser) return;
             const newMsg = data.data;
+
             setConversationMessages((prev) =>
-                prev.some((m) => m.id === newMsg.id) ? prev : [...prev, newMsg]
+                prev.map((m) =>
+                    String(m.id).startsWith("temp") &&
+                    m.message === newMsg.message &&
+                    m.from_id === newMsg.from_id
+                        ? { ...m, ...newMsg, confirmed: true } // update samo polja
+                        : m
+                )
             );
 
             setMessage("");
@@ -29,6 +37,30 @@ function ChatInput({
     function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         if (!targetUser || !message.trim()) return;
+
+        // Instant msg show
+        const optimisticMessage: ChatMessage = {
+            id: `temp-${Date.now()}`,
+            from_id: loggedUser?.id,
+            from: {
+                id: loggedUser?.id,
+                image_path: loggedUser?.image_path,
+                name: loggedUser?.name,
+            },
+            to: {
+                id: targetUser.id,
+                image_path: targetUser.image_path,
+                name: targetUser.name,
+            },
+            to_id: targetUser.id,
+            message: message,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            read_at: null,
+            confirmed: false,
+        };
+
+        setConversationMessages((prev) => [...prev, optimisticMessage]);
 
         sendMessageMutate({
             to_id: targetUser.id,

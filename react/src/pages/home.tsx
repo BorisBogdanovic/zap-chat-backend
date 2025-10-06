@@ -48,9 +48,18 @@ function Home() {
         channel.bind("MessageSentEvent", (data: LiveMessage) => {
             console.log("Live message:", data);
             if (data.from_id === loggedUser.id) return;
-            // Ignoriši ako poruka nije za trenutnog target user-a
+            // Ignore if msg is not for target user
             if (targetUser && data.from_id !== targetUser.id) return;
-            setConversationMessages((prev) => [...prev, data as ChatMessage]);
+
+            setConversationMessages((prev) =>
+                prev.map((m) =>
+                    String(m.id).startsWith("temp") &&
+                    m.message === data.message &&
+                    m.from_id === data.from_id
+                        ? { ...m, ...data, confirmed: true } // update samo polja
+                        : m
+                )
+            );
         });
 
         return () => {
@@ -101,6 +110,7 @@ function Home() {
                 {/* Input */}
                 {targetUser && (
                     <ChatInput
+                        loggedUser={loggedUser}
                         targetUser={targetUser}
                         message={message}
                         setMessage={setMessage}

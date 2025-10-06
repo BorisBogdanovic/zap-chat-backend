@@ -27,6 +27,7 @@ export interface UsersListProps {
 
 // Chat input props type
 export interface ChatInputProps {
+    loggedUser: LoggedUser | null;
     targetUser: User | null;
     message: string;
     setMessage: React.Dispatch<React.SetStateAction<string>>;
