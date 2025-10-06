@@ -60,10 +60,16 @@ export type ResetUserObj = {
 export type Message = {
     data: {
         created_at: string;
+        from: {
+            id: number;
+            image_path: string;
+            name: string;
+        };
         from_id: number;
         id: number;
         message: string;
         read_at: null;
+        to: { id: number; image_path: string; name: string };
         to_id: number;
         updated_at: string;
     };
