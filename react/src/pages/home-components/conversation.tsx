@@ -6,7 +6,7 @@ function Conversation({
     conversationMessages,
     targetUser,
     loggedUser,
-    scrollToTop,
+    setShowConversation,
 }: ConversationProps) {
     // Auto scroll
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -29,10 +29,15 @@ function Conversation({
         <>
             <div className="conversation-header">
                 <h3>
-                    <span className="top-icon-wrapper" onClick={scrollToTop}>
+                    {/* <span className="top-icon-wrapper">
                         <img src="icons/top-arrow-icon.png" alt="top-arrow" />
-                    </span>{" "}
-                    Conversation with {targetUser?.name}
+                    </span>{" "} */}
+                    <div className="back-button-mobile">
+                        <button onClick={() => setShowConversation(false)}>
+                            ←
+                        </button>
+                    </div>
+                    Chat with {targetUser?.name}
                 </h3>
             </div>
             <section className="conversation">

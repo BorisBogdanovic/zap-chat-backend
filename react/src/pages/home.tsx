@@ -4,7 +4,7 @@ import { RootState } from "../redux/store";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMessages } from "../services/chatServices";
 import { ChatMessage, LiveMessage, User } from "../types/type";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { pusher } from "../pusherClient";
 import EmptyConversation from "../components/emptyState";
 import UsersList from "./home-components/usersList";
@@ -20,8 +20,7 @@ function Home() {
     const [conversationMessages, setConversationMessages] = useState<
         ChatMessage[]
     >([]);
-
-    const messagesTopRef = useRef<HTMLDivElement | null>(null);
+    const [showConversation, setShowConversation] = useState(false);
 
     // Fetch messages only on targetUser change
     const { data: messages } = useQuery({
@@ -59,38 +58,39 @@ function Home() {
         };
     }, [loggedUser, targetUser]);
 
-    // Scroll to top handler
-    function scrollToTop() {
-        if (messagesTopRef.current) {
-            messagesTopRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-    }
-
     // console.log("Conversation messages", conversationMessages);
     // console.log("Logged user", loggedUser);
     // console.log("Targer user", targetUser);
 
     return (
         <div className="chat-wrapper">
-            <div>
-                <div ref={messagesTopRef} />
+            <div
+                className={`users-list-wrapper ${
+                    showConversation ? "hidden-mobile" : "active"
+                }`}
+            >
                 {/* Users list */}
                 <UsersList
                     loggedUser={loggedUser}
                     setTargetUser={setTargetUser}
                     messages={messages}
+                    setShowConversation={setShowConversation}
                 />
             </div>
 
             {/* Conversation */}
-            <div className="conversation-wrapper">
+            <div
+                className={`conversation-wrapper ${
+                    showConversation ? "active" : "hidden-mobile"
+                }`}
+            >
                 {targetUser ? (
                     <>
                         <Conversation
                             conversationMessages={conversationMessages}
                             targetUser={targetUser}
                             loggedUser={loggedUser}
-                            scrollToTop={scrollToTop}
+                            setShowConversation={setShowConversation}
                         />
                     </>
                 ) : (

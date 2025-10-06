@@ -6,7 +6,12 @@ import { Helix } from "ldrs/react";
 import { ChatMessage, User } from "../../types/type";
 import { UsersListProps } from "../../types/interfaces";
 
-function UsersList({ loggedUser, setTargetUser, messages }: UsersListProps) {
+function UsersList({
+    loggedUser,
+    setTargetUser,
+    messages,
+    setShowConversation,
+}: UsersListProps) {
     const [users_search, setUsersSearch] = useState("");
     const debouncedSearch = useDebounce(users_search, 2000);
     const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
@@ -99,7 +104,10 @@ function UsersList({ loggedUser, setTargetUser, messages }: UsersListProps) {
 
                     return (
                         <div
-                            onClick={() => setTargetUser(user)}
+                            onClick={() => {
+                                setTargetUser(user);
+                                setShowConversation(true);
+                            }}
                             key={user.id}
                             className="chat"
                         >
