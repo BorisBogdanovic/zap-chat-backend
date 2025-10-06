@@ -22,6 +22,7 @@ export interface UsersListProps {
     loggedUser: LoggedUser | null;
     setTargetUser: React.Dispatch<React.SetStateAction<User | null>>;
     messages: Messages;
+    setShowConversation: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Chat input props type
@@ -38,5 +39,5 @@ export interface ConversationProps {
     conversationMessages: ChatMessage[];
     targetUser: User | null;
     loggedUser: LoggedUser | null;
-    scrollToTop: () => void;
+    setShowConversation: React.Dispatch<React.SetStateAction<boolean>>;
 }

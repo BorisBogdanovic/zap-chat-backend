@@ -13,21 +13,12 @@ $border-gray: #ddd;
     height: 100vh;
     font-family: Arial, sans-serif;
 
-    @media (max-width: 768px) {
-        grid-template-columns: 1fr;
-    }
-
     .users {
-        // width: 30%;
         background: $white;
         border-right: 1px solid $border-gray;
         display: flex;
         flex-direction: column;
         height: 100vh;
-
-        // @media (max-width: 768px) {
-        //     height: auto;
-        // }
 
         .heading-wrapper {
             padding: 15px 20px;
@@ -161,10 +152,6 @@ $border-gray: #ddd;
         position: relative;
         text-align: center;
 
-        // @media (max-width: 768px) {
-        //     display: none;
-        // }
-
         .conversation-header {
             position: sticky;
             top: 0;
@@ -185,14 +172,8 @@ $border-gray: #ddd;
                 align-items: center;
                 justify-content: center;
 
-                .top-icon-wrapper {
-                    margin-right: 10px;
-                    img {
-                        width: 40px;
-                        height: 40px;
-                        object-fit: cover;
-                        cursor: pointer;
-                    }
+                .back-button-mobile {
+                    display: none;
                 }
             }
         }
@@ -201,13 +182,15 @@ $border-gray: #ddd;
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
-            padding: 2rem 2rem 5rem 2rem;
+            padding: 5rem 2rem 5rem 2rem;
             height: 100vh;
             overflow-y: auto;
             background: #f8f8fb;
             border-radius: 0.5rem;
+            margin-top: -60px;
             @media (max-width: 768px) {
-                padding: 1rem 1rem 7rem 1rem;
+                padding: 6rem 1rem 7rem 1rem;
+                margin-top: -80px;
             }
             .message {
                 display: flex;
@@ -316,6 +299,44 @@ $border-gray: #ddd;
                     }
                 }
             }
+        }
+    }
+}
+
+/* Mobilni prikaz */
+@media (max-width: 768px) {
+    .chat-wrapper {
+        display: block;
+        grid-template-columns: 1fr;
+    }
+
+    .users-list-wrapper,
+    .conversation-wrapper {
+        width: 100%;
+        height: 100%;
+        display: none;
+    }
+
+    .users-list-wrapper.active,
+    .conversation-wrapper.active {
+        display: block;
+    }
+
+    .back-button-mobile {
+        display: block !important;
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid #eee;
+        background: #f9f9f9;
+        margin-right: 6px;
+
+        button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
         }
     }
 }
