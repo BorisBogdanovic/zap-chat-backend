@@ -4,17 +4,45 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserSettingsRequest;
 use App\Http\Requests\UpdateUserImageRequest;
 use App\Http\Requests\UserSearchRequest;
-use Illuminate\Support\Facades\Auth; 
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use App\Models\User; 
+use App\Facades\UserFacade;
+use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
+
+
 
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+//////////////////////////////////////////////////////////////////////////////GET USERS
+public function fetchUsers(UserSearchRequest $request): JsonResponse
+{
+    try {
+        $users = UserFacade::fetchUsers($request->search);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Users fetched successfully!',
+            'data'    => $users,
+        ], 200);
+
+    } catch (\Throwable $e) {
+        \Log::error('Failed to fetch users', ['error' => $e->getMessage()]);
+
+        return response()->json([
+            'status'  => false,
+            'message' => 'Failed to fetch users.',
+            'data'    => null,
+        ], 500);
+    }
+}
 //////////////////////////////////////////////////////////////////////////////EDIT USERS SETTIGNS
-public function settings(UserSettingsRequest $request){
+public function settings(UserSettingsRequest $request)
+{
     
     $user = auth()->user();
     $user->fill($request->only([
@@ -34,7 +62,8 @@ public function settings(UserSettingsRequest $request){
     ]);
 }
 //////////////////////////////////////////////////////////////////////////////UPDATE USER IMAGE
-public function updateImage(UpdateUserImageRequest $request){
+public function updateImage(UpdateUserImageRequest $request)
+{
     $user = auth()->user();
     if(!$request->hasFile('avatar')) {
         return response()->json([
@@ -66,25 +95,6 @@ public function updateImage(UpdateUserImageRequest $request){
         ],
     ]);
 }
-//////////////////////////////////////////////////////////////////////////////GET USERS
-public function fetchUsers(UserSearchRequest $request){
-    $query = User::where('id', '!=', Auth::id());
 
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-              ->orWhere('last_name', 'like', "%{$search}%")
-              ->orWhere('username', 'like', "%{$search}%");
-        });
-    }
 
-    $users = $query->get(['id', 'name', 'last_name', 'email', 'image_path', 'username']);
-
-    return response()->json([
-        'status'  => 'success',
-        'message' => 'Users fetched successfully!',
-        'data'    => $users
-    ]);
-}
 }

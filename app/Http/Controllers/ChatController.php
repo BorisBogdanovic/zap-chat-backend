@@ -4,11 +4,12 @@ use Illuminate\Http\Request;
 use App\Http\Requests\MessageRequest;
 use App\Http\Requests\FetchMessageRequest;
 use App\Facades\Chat;
+use Illuminate\Http\JsonResponse;
 
 class ChatController extends Controller
 {
 //////////////////////////////////////////////////////////////////////////////SEND MESSAGES TO OTHER USER
-public function store(MessageRequest $request)
+public function store(MessageRequest $request):JsonResponse
 {
     try {
         $message = Chat::send(
@@ -34,7 +35,7 @@ public function store(MessageRequest $request)
     }
 }
 //////////////////////////////////////////////////////////////////////////////GET MESSAGES BETWEEN USERS
-public function fetchMessages(FetchMessageRequest $request)
+public function fetchMessages(FetchMessageRequest $request):JsonResponse
 {
    try{
     $contactId = (int) $request->contact_id;
@@ -62,6 +63,5 @@ public function fetchMessages(FetchMessageRequest $request)
             'data'    => null,
         ], 500);
     }
-
 }
 }

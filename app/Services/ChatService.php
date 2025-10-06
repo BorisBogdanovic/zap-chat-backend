@@ -24,9 +24,9 @@ public function send(int $fromId,int $toId,string $messageText):Message
      return $message->load('from:id,name,image_path', 'to:id,name,image_path');
 }
 //////////////////////////////////////////////////////////////////////////////SEND MESSAGES SERVICE
-public function fetchMessages(int $userId, int $contactId)
+public function fetchMessages(int $userId, int $contactId): array
 {
-    $contact = User::findOrFail($contactId);
+   $contact = User::findOrFail($contactId);
 
    $messages = Message::betweenUsers($userId, $contactId)
             ->with(['from:id,name,image_path', 'to:id,name,image_path'])
