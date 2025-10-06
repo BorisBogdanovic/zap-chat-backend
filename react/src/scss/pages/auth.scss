@@ -18,11 +18,25 @@
         }
     }
     .form-wrapper {
-        text-align: center;
+        // text-align: center;
         margin-block: auto;
         margin-bottom: 300px;
         padding: 30px;
         background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        @media (max-width: 768px) {
+            padding: 16px;
+        }
+
+        form {
+            width: 400px;
+            @media (max-width: 768px) {
+                width: 100%;
+            }
+        }
         .logo {
             text-align: center;
 
