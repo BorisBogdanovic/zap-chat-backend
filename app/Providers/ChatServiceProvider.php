@@ -12,7 +12,7 @@ class ChatServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton("Message",function($app){
+        $this->app->singleton("Chat",function($app){
             return new ChatService();
         });
     }

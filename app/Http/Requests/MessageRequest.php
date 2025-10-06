@@ -22,8 +22,14 @@ class MessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'to_id'   => 'required|exists:users,id',
-            'message' => 'required|string|max:1000'
+            'to_id'   => ['required', 'integer', 'exists:users,id', 'different:auth_id'],
+            'message' => ['required', 'string', 'min:1', 'max:2000'],
         ];
+
+
     }
+    protected function prepareForValidation(): void
+{
+    $this->merge(['auth_id' => auth()->id()]);
+}
 }

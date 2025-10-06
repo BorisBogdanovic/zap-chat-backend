@@ -22,7 +22,7 @@ class FetchMessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-          'contact_id' => 'required|integer|exists:users,id',
-        ];
+        'contact_id' => 'required|integer|exists:users,id|different:' . auth()->id(),
+    ];
     }
 }

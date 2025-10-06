@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class ChatService
 {
 //////////////////////////////////////////////////////////////////////////////GET MESSAGES SERVICE
-public function send($fromId, $toId, $messageText)
+public function send(int $fromId,int $toId,string $messageText):Message
 {
     $message = Message::create([
         'from_id' => $fromId,
@@ -19,26 +19,19 @@ public function send($fromId, $toId, $messageText)
         'read_at' => null,
     ]);
 
-    event(new MessageSent($messageText, $fromId, $toId));
+    event(new MessageSent($message));
 
-    return $message;
+     return $message->load('from:id,name,image_path', 'to:id,name,image_path');
 }
 //////////////////////////////////////////////////////////////////////////////SEND MESSAGES SERVICE
-public function fetchMessages($contactId)
+public function fetchMessages(int $userId, int $contactId)
 {
     $contact = User::findOrFail($contactId);
 
-    $messages = Message::where(function ($q) use ($contactId) {
-            $q->where('from_id', Auth::id())
-              ->where('to_id', $contactId);
-        })
-        ->orWhere(function ($q) use ($contactId) {
-            $q->where('from_id', $contactId)
-              ->where('to_id', Auth::id());
-        })
-        ->orderBy('created_at', 'asc')
-        ->get();
-
+   $messages = Message::betweenUsers($userId, $contactId)
+            ->with(['from:id,name,image_path', 'to:id,name,image_path'])
+            ->orderBy('created_at', 'asc')
+            ->get();
     return [
         'contact'  => $contact,
         'messages' => $messages,
