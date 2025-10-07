@@ -10,6 +10,7 @@ import EmptyConversation from "../components/emptyState";
 import UsersList from "./home-components/usersList";
 import ChatInput from "./home-components/chatInput";
 import Conversation from "./home-components/conversation";
+import { transformLiveToChat } from "../utils/utils";
 
 function Home() {
     const loggedUser = useSelector(
@@ -20,6 +21,7 @@ function Home() {
     const [conversationMessages, setConversationMessages] = useState<
         ChatMessage[]
     >([]);
+
     const [showConversation, setShowConversation] = useState(false);
 
     // Fetch messages only on targetUser change
@@ -47,20 +49,41 @@ function Home() {
 
         channel.bind("MessageSentEvent", (data: LiveMessage) => {
             console.log("Live message:", data);
+
+            // If logged user sent msg, ignore it
             if (data.from_id === loggedUser.id) return;
-            // Ignore if msg is not for target user
+
             if (targetUser && data.from_id !== targetUser.id) return;
 
-            // Remove duplicates (optimistic msg)
-            setConversationMessages((prev) =>
-                prev.map((m) =>
-                    String(m.id).startsWith("temp") &&
-                    m.message === data.message &&
-                    m.from_id === data.from_id
-                        ? { ...m, ...data, confirmed: true } // update samo polja
-                        : m
-                )
-            );
+            setConversationMessages((prev) => {
+                // console.log(prev);
+                // if optimistic msg
+                const tempExists = prev.some(
+                    (m) =>
+                        String(m.id).startsWith("temp") &&
+                        m.message === data.message &&
+                        m.from_id === data.from_id
+                );
+
+                if (tempExists) {
+                    // update temp msg
+                    return prev.map((m) =>
+                        String(m.id).startsWith("temp") &&
+                        m.message === data.message &&
+                        m.from_id === data.from_id
+                            ? { ...m, ...data, confirmed: true }
+                            : m
+                    );
+                }
+
+                // Helper function to merge types for TS. Live msg has different structure than regular msg
+                const newMessage = transformLiveToChat(
+                    data,
+                    loggedUser,
+                    targetUser
+                );
+                return [...prev, newMessage];
+            });
         });
 
         return () => {

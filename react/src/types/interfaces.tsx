@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ReactNode } from "react";
-import { ChatMessage, LoggedUser, Messages, User } from "./type";
+import { ChatMessage, LiveMessage, LoggedUser, Messages, User } from "./type";
 
 // Tipiziranje za children (PrivateRoute)
 export interface PrivateRouteProps {

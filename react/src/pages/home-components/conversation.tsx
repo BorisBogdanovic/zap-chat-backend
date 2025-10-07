@@ -39,6 +39,8 @@ function Conversation({
             </div>
             <section className="conversation">
                 {conversationMessages.map((msg: ChatMessage) => {
+                    // console.log("MSG", msg);
+
                     // User profile imgs finder
                     const isFromMe = msg.from_id === loggedUser?.id;
                     const imageSrc = isFromMe

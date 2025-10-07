@@ -151,6 +151,9 @@ function Settings() {
                                 required: "Name is required",
                             })}
                         />
+                        {errors.name && (
+                            <p className="error-text">{errors.name.message}</p>
+                        )}
                     </div>
                     <div className="form-row">
                         <label>Lastname</label>
@@ -161,6 +164,11 @@ function Settings() {
                                 required: "Lastname is required",
                             })}
                         />
+                        {errors.last_name && (
+                            <p className="error-text">
+                                {errors.last_name.message}
+                            </p>
+                        )}
                     </div>
                     <div className="form-row">
                         <label>Username</label>
@@ -171,6 +179,11 @@ function Settings() {
                                 required: "Username is required",
                             })}
                         />
+                        {errors.username && (
+                            <p className="error-text">
+                                {errors.username.message}
+                            </p>
+                        )}
                     </div>
                     <div className="form-row">
                         <label>Password</label>
@@ -182,6 +195,11 @@ function Settings() {
                                 required: "Password is required",
                             })}
                         />
+                        {errors.password && (
+                            <p className="error-text">
+                                {errors.password.message}
+                            </p>
+                        )}
                     </div>
                     <div className="form-row">
                         <label>Confirm Password</label>
@@ -196,6 +214,11 @@ function Settings() {
                                     "Passwords do not match",
                             })}
                         />
+                        {errors.password_confirmation && (
+                            <p className="error-text">
+                                {errors.password_confirmation.message}
+                            </p>
+                        )}
                     </div>
 
                     <div className="form-actions">

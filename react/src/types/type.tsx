@@ -88,9 +88,13 @@ export type ChatMessage = {
     id: number | string;
     message: string;
     read_at: null;
-    to: { id: number; image_path: string; name: string };
+    to: {
+        id: number | undefined;
+        image_path: string | undefined;
+        name: string | undefined;
+    };
     to_id: number;
-    updated_at: string;
+    updated_at: string | undefined;
     confirmed?: boolean;
 };
 
@@ -99,6 +103,7 @@ export type LiveMessage = {
     from_id: number;
     message: string;
     to_id: number;
+    id?: string | number;
 };
 
 // Fetch Messages
