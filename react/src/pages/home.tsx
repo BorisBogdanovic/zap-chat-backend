@@ -11,6 +11,7 @@ import UsersList from "./home-components/usersList";
 import ChatInput from "./home-components/chatInput";
 import Conversation from "./home-components/conversation";
 import { transformLiveToChat } from "../utils/utils";
+import { OnlineUser } from "../types/interfaces";
 
 function Home() {
     const loggedUser = useSelector(
@@ -23,6 +24,8 @@ function Home() {
     >([]);
 
     const [showConversation, setShowConversation] = useState(false);
+
+    const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
 
     // Fetch messages only on targetUser change
     const { data: messages } = useQuery({
@@ -92,6 +95,39 @@ function Home() {
         };
     }, [loggedUser, targetUser]);
 
+    // Online presence channel
+    useEffect(() => {
+        if (!loggedUser) return;
+
+        const presenceChannel = pusher.subscribe("presence-online");
+
+        presenceChannel.bind(
+            "pusher:subscription_succeeded",
+            (members: any) => {
+                const users = Object.values(members.members) as OnlineUser[];
+                setOnlineUsers(users);
+            }
+        );
+
+        presenceChannel.bind("pusher:member_added", (member: OnlineUser) => {
+            setOnlineUsers((prev) => {
+                const exists = prev.some((u) => u.id === member.id);
+                if (!exists) return [...prev, member];
+                return prev;
+            });
+        });
+
+        presenceChannel.bind("pusher:member_removed", (member: OnlineUser) => {
+            setOnlineUsers((prev) => prev.filter((u) => u.id !== member.id));
+        });
+
+        return () => {
+            presenceChannel.unbind_all();
+            pusher.unsubscribe("presence-online");
+        };
+    }, [loggedUser]);
+    console.log("Online users: ", onlineUsers);
+
     // console.log("Conversation messages", conversationMessages);
     // console.log("Logged user", loggedUser);
     // console.log("Targer user", targetUser);
@@ -109,6 +145,7 @@ function Home() {
                     setTargetUser={setTargetUser}
                     messages={messages}
                     setShowConversation={setShowConversation}
+                    onlineUsers={onlineUsers}
                 />
             </div>
 

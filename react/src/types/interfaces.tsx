@@ -42,3 +42,8 @@ export interface ConversationProps {
     loggedUser: LoggedUser | null;
     setShowConversation: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export interface OnlineUser {
+    id: number;
+    name: string;
+}

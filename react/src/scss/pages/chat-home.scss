@@ -130,6 +130,26 @@ $border-gray: #ddd;
                         margin-bottom: 3px;
                     }
 
+                    .contact-status-wrapper {
+                        display: flex;
+                        justify-content: end;
+                        align-items: center;
+                        .contact-status {
+                            width: 10px;
+                            height: 10px;
+                            border-radius: 50%;
+                            margin-right: 8px;
+                            text-align: end;
+                        }
+                    }
+
+                    .contact-status.online {
+                        background-color: #4caf50;
+                    }
+                    .contact-status.offline {
+                        background-color: #ccc;
+                    }
+
                     .chat-text {
                         font-size: 0.85rem;
                         color: $dark-gray;

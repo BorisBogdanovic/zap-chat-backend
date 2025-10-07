@@ -11,6 +11,7 @@ function UsersList({
     setTargetUser,
     messages,
     setShowConversation,
+    onlineUsers,
 }: UsersListProps) {
     const [users_search, setUsersSearch] = useState("");
     const debouncedSearch = useDebounce(users_search, 2000);
@@ -102,6 +103,8 @@ function UsersList({
                                 new Date(a.created_at).getTime()
                         )[0];
 
+                    const isOnline = onlineUsers.some((u) => u.id === user.id);
+
                     return (
                         <div
                             onClick={() => {
@@ -124,6 +127,16 @@ function UsersList({
                             </div>
                             <div className="text-wrapper">
                                 <div className="chat-name">{user.name}</div>
+
+                                {/* IS online */}
+                                <div className="contact-status-wrapper">
+                                    <div
+                                        className={`contact-status ${
+                                            isOnline ? "online" : "offline"
+                                        }`}
+                                    ></div>
+                                </div>
+
                                 <div className="chat-text">
                                     {lastMessage?.message || "No messages yet"}
                                 </div>
