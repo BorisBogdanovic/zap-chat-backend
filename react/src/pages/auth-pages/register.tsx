@@ -3,6 +3,7 @@ import { RegisterFormUser } from "../../types/type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { registerNewUser } from "../../services/authServices";
 import { useNavigate } from "react-router-dom";
+import { showErrorToast, showSuccessToast } from "../../components/toast";
 
 function Register() {
     const queryClient = useQueryClient();
@@ -20,10 +21,10 @@ function Register() {
         mutationFn: registerNewUser,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["register"] });
-            alert("Registration success!");
+            showSuccessToast("Registration success!");
         },
         onError: () => {
-            alert("Registration failed!");
+            showErrorToast("Registration failed!");
         },
     });
 

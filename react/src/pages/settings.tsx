@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editUser, uploadAvatar } from "../services/settingsServices";
 import { EditedUser } from "../types/type";
 import { updateLoggedInUser } from "../redux/slice";
+import { showErrorToast, showSuccessToast } from "../components/toast";
 
 function Settings() {
     const dispatch = useDispatch();
@@ -39,10 +40,10 @@ function Settings() {
             );
 
             queryClient.invalidateQueries({ queryKey: ["settings"] });
-            alert("User is updated!");
+            showSuccessToast("User is updated!");
         },
         onError: () => {
-            alert("Failed to update user");
+            showErrorToast("Failed to update user");
         },
     });
 
@@ -70,10 +71,10 @@ function Settings() {
                 JSON.stringify({ ...storedUser, image_path: newImagePath })
             );
 
-            alert("Avatar updated!");
+            showSuccessToast("Avatar updated!");
         },
         onError: () => {
-            alert("Failed to upload avatar");
+            showErrorToast("Failed to upload avatar");
         },
     });
 
@@ -93,7 +94,7 @@ function Settings() {
     const loggedUser = useSelector(
         (state: RootState) => state.auth.loggedInUser
     );
-    console.log("LOGGED USER", loggedUser);
+    // console.log("LOGGED USER", loggedUser);
 
     return (
         <div className="profile-page">

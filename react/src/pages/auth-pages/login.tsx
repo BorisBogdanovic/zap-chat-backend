@@ -6,6 +6,7 @@ import { loginUser } from "../../services/authServices";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addLoggedUser } from "../../redux/slice";
+import { showErrorToast, showSuccessToast } from "../../components/toast";
 
 function Login() {
     const navigate = useNavigate();
@@ -31,12 +32,12 @@ function Login() {
                 );
 
                 // Navigacija na home
-                alert("Login is successfull!");
+                showSuccessToast("Login is successfull!");
                 navigate("/");
             }
         },
         onError: () => {
-            alert("Login failed!");
+            showErrorToast("Login failed!");
         },
     });
 

@@ -4,6 +4,7 @@ import { forgotPasswordReq } from "../../services/authServices";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { ForgotPassField } from "../../types/type";
+import { showErrorToast, showInfoToast } from "../../components/toast";
 
 function ForgotPassword() {
     const navigate = useNavigate();
@@ -19,11 +20,11 @@ function ForgotPassword() {
         mutationFn: forgotPasswordReq,
         onSuccess: (data) => {
             if (data && data.status) {
-                alert("Instruction are sent to your email!");
+                showInfoToast("Instruction are sent to your email!");
             }
         },
         onError: () => {
-            alert("Error!");
+            showErrorToast("Error!");
         },
     });
 

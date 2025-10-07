@@ -6,6 +6,7 @@ import Layout from "./components/layout";
 import "ldrs/ring";
 import { Helix } from "ldrs/react";
 import "ldrs/react/Helix.css";
+import { ToastContainer } from "react-toastify";
 
 const Register = lazy(() => import("./pages/auth-pages/register"));
 const Login = lazy(() => import("./pages/auth-pages/login"));
@@ -24,6 +25,7 @@ function App() {
                 <Suspense
                     fallback={<Helix size="45" speed="2.5" color="black" />}
                 >
+                    <ToastContainer position="top-right" autoClose={3000} />
                     <Routes>
                         <Route
                             path="/register"

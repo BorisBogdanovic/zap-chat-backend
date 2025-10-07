@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { resetPasswordReq } from "../../services/authServices";
 import { useForm } from "react-hook-form";
 import { ResetUserObj } from "../../types/type";
+import { showErrorToast, showSuccessToast } from "../../components/toast";
 
 function ResetPassword() {
     const [searchParams] = useSearchParams();
@@ -29,12 +30,12 @@ function ResetPassword() {
         mutationFn: resetPasswordReq,
         onSuccess: (data) => {
             if (data && data.status) {
-                alert("Reset is successfull!");
+                showSuccessToast("Reset is successfull!");
                 navigate("/login");
             }
         },
         onError: () => {
-            alert("Error!");
+            showErrorToast("Error!");
         },
     });
 
