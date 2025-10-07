@@ -41,25 +41,20 @@ public function fetchUsers(UserSearchRequest $request): JsonResponse
     }
 }
 //////////////////////////////////////////////////////////////////////////////EDIT USERS SETTIGNS
-public function settings(UserSettingsRequest $request)
+public function settings(UserSettingsRequest $request): JsonResponse
 {
-    
-    $user = auth()->user();
-    $user->fill($request->only([
-        'name',
-        'last_name',
-        'username',
-    ]));
-    if ($request->filled('password')) {
-        $user->password = Hash::make($request->password);
-    }
-    $user->save();
+        $user = auth()->user();
+        
+        $updatedUser = UserFacade::updateSettings(
+            $user,
+            $request->only(['name', 'last_name', 'username', 'password'])
+        );
 
-    return response()->json([
-        'status'  => 'success',
-        'message' => 'Settings updated successfully!',
-        'data'    => $user,
-    ]);
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Settings updated successfully!',
+            'data'    => $updatedUser, 
+        ], 200);
 }
 //////////////////////////////////////////////////////////////////////////////UPDATE USER IMAGE
 public function updateImage(UpdateUserImageRequest $request)
