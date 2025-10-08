@@ -44,6 +44,10 @@ function UsersList({
         }
     }, [messages]);
 
+    useEffect(() => {
+        console.log("Online Users", onlineUsers);
+    }, [onlineUsers]);
+
     // Loading / Error states
     if (isLoading)
         return (
@@ -124,18 +128,15 @@ function UsersList({
                                     }
                                     alt="Profilna slika"
                                 />
+                                {/* IS online */}
+                                <div
+                                    className={`contact-status ${
+                                        isOnline ? "online" : "offline"
+                                    }`}
+                                ></div>
                             </div>
                             <div className="text-wrapper">
                                 <div className="chat-name">{user.name}</div>
-
-                                {/* IS online */}
-                                <div className="contact-status-wrapper">
-                                    <div
-                                        className={`contact-status ${
-                                            isOnline ? "online" : "offline"
-                                        }`}
-                                    ></div>
-                                </div>
 
                                 <div className="chat-text">
                                     {lastMessage?.message || "No messages yet"}

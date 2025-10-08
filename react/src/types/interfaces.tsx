@@ -23,6 +23,7 @@ export interface UsersListProps {
     setTargetUser: React.Dispatch<React.SetStateAction<User | null>>;
     messages: Messages;
     setShowConversation: React.Dispatch<React.SetStateAction<boolean>>;
+    onlineUsers: OnlineUser[];
 }
 
 // Chat input props type
@@ -43,7 +44,24 @@ export interface ConversationProps {
     setShowConversation: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Online user obj
 export interface OnlineUser {
+    created_at: string;
+    email: string;
+    email_verified_at: null;
     id: number;
+    image_path: string;
+    is_admin: number;
+    last_name: string;
     name: string;
+    updated_at: string;
+    username: string;
+}
+
+// Pusher live members
+export interface Members {
+    count: number;
+    me: { id: string; info: OnlineUser };
+    members: OnlineUser;
+    myID: string;
 }

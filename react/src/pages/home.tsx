@@ -11,7 +11,7 @@ import UsersList from "./home-components/usersList";
 import ChatInput from "./home-components/chatInput";
 import Conversation from "./home-components/conversation";
 import { transformLiveToChat } from "../utils/utils";
-import { OnlineUser } from "../types/interfaces";
+import { Members, OnlineUser } from "../types/interfaces";
 
 function Home() {
     const loggedUser = useSelector(
@@ -25,6 +25,7 @@ function Home() {
 
     const [showConversation, setShowConversation] = useState(false);
 
+    // Online status
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
 
     // Fetch messages only on targetUser change
@@ -103,13 +104,15 @@ function Home() {
 
         presenceChannel.bind(
             "pusher:subscription_succeeded",
-            (members: any) => {
+            (members: Members) => {
+                // console.log("Members", members);
                 const users = Object.values(members.members) as OnlineUser[];
                 setOnlineUsers(users);
             }
         );
 
         presenceChannel.bind("pusher:member_added", (member: OnlineUser) => {
+            console.log("Member Added: ", member);
             setOnlineUsers((prev) => {
                 const exists = prev.some((u) => u.id === member.id);
                 if (!exists) return [...prev, member];
@@ -118,6 +121,8 @@ function Home() {
         });
 
         presenceChannel.bind("pusher:member_removed", (member: OnlineUser) => {
+            console.log("Member Removed: ", member);
+
             setOnlineUsers((prev) => prev.filter((u) => u.id !== member.id));
         });
 
@@ -126,8 +131,8 @@ function Home() {
             pusher.unsubscribe("presence-online");
         };
     }, [loggedUser]);
-    console.log("Online users: ", onlineUsers);
 
+    // console.log("Online users: ", onlineUsers);
     // console.log("Conversation messages", conversationMessages);
     // console.log("Logged user", loggedUser);
     // console.log("Targer user", targetUser);
