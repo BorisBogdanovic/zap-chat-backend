@@ -80,6 +80,9 @@ public function updateImage(UpdateUserImageRequest $request): JsonResponse
         ],
     ],200);
 }
+//////////////////////////////////////////////////////////////////////////////DELETE USER
+public function deleteUser(): JsonResponse
+{}
 
 
 }

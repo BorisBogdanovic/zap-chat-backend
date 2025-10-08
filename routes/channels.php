@@ -13,3 +13,4 @@ Broadcast::channel('chat.{id}', function ($user, $id) {
 Broadcast::channel('online', function ($user) {
    return $user->toArray();
 });
+

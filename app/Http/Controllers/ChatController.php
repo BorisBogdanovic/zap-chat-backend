@@ -2,9 +2,11 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\MessageRequest;
+use App\Http\Requests\UserTypingRequest;
 use App\Http\Requests\FetchMessageRequest;
 use App\Facades\Chat;
 use Illuminate\Http\JsonResponse;
+use App\Events\UserTyping;
 
 class ChatController extends Controller
 {
@@ -63,5 +65,18 @@ public function fetchMessages(FetchMessageRequest $request):JsonResponse
             'data'    => null,
         ], 500);
     }
+}
+//////////////////////////////////////////////////////////////////////////////USER TYPING
+public function userTyping(UserTypingRequest $request): JsonResponse
+{
+
+
+    broadcast(new UserTyping(auth()->id(), $request->to_id))->toOthers();;
+
+    
+        return response()->json([
+            'status'  =>true,
+            'message' => 'Typing event broadcasted.'
+        ]);
 }
 }
