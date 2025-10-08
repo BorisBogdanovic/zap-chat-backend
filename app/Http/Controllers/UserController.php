@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserSettingsRequest;
 use App\Http\Requests\UpdateUserImageRequest;
 use App\Http\Requests\UserSearchRequest;
+use App\Http\Requests\DeleteUserRequest;
 use App\Facades\UserFacade;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 
 
@@ -80,9 +83,4 @@ public function updateImage(UpdateUserImageRequest $request): JsonResponse
         ],
     ],200);
 }
-//////////////////////////////////////////////////////////////////////////////DELETE USER
-public function deleteUser(): JsonResponse
-{}
-
-
 }
