@@ -44,10 +44,6 @@ function UsersList({
         }
     }, [messages]);
 
-    useEffect(() => {
-        console.log("Online Users", onlineUsers);
-    }, [onlineUsers]);
-
     // Loading / Error states
     if (isLoading)
         return (

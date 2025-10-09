@@ -5,7 +5,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "../services/authServices";
 import { logoutUserFromReduxAndLS } from "../redux/slice";
-import { pusher } from "../pusherClient";
+// import { pusher } from "../pusherClient";
 
 function Sidebar() {
     const dispatch = useDispatch();
@@ -24,9 +24,9 @@ function Sidebar() {
             console.log("Temporary use because of build", data);
 
             // Pusher live channels stoping
-            pusher.unsubscribe(`private-chat.${loggedUser?.id}`);
-            pusher.unsubscribe("presence-online");
-            pusher.disconnect();
+            // pusher.unsubscribe(`private-chat.${loggedUser?.id}`);
+            // pusher.unsubscribe("presence-online");
+            // pusher.disconnect();
 
             // Clear localStorage
             localStorage.removeItem("loggedInUser");

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addLoggedUser } from "../../redux/slice";
 import { showErrorToast, showSuccessToast } from "../../components/toast";
-import { pusher } from "../../pusherClient";
+// import { pusher } from "../../pusherClient";
 
 function Login() {
     const navigate = useNavigate();
@@ -33,12 +33,12 @@ function Login() {
                 );
 
                 // Pusher connection
-                if (
-                    !pusher.connection ||
-                    pusher.connection.state === "disconnected"
-                ) {
-                    pusher.connect();
-                }
+                // if (
+                //     !pusher.connection ||
+                //     pusher.connection.state === "disconnected"
+                // ) {
+                //     pusher.connect();
+                // }
 
                 // Navigacija na home
                 showSuccessToast("Login is successfull!");
