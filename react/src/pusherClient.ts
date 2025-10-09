@@ -4,7 +4,7 @@ import Pusher from "pusher-js";
 const token = JSON.parse(
     localStorage.getItem("loggedInUser") || "{}"
 )?.auth_token;
-console.log("Token", token);
+// console.log("Token", token);
 export const pusher = new Pusher("c62c108160e4b23c8f71", {
     cluster: "eu",
     forceTLS: true, // ako koristiš https, inače false

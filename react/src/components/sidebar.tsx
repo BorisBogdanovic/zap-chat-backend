@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "../services/authServices";
 import { logoutUserFromReduxAndLS } from "../redux/slice";
@@ -9,24 +9,18 @@ import { logoutUserFromReduxAndLS } from "../redux/slice";
 
 function Sidebar() {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     const queryClient = useQueryClient();
 
     // Logged user from Redux
-    const loggedUser = useSelector(
-        (state: RootState) => state.auth.loggedInUser
-    );
+    // const loggedUser = useSelector(
+    //     (state: RootState) => state.auth.loggedInUser
+    // );
 
     // HTTP POST
     const logoutUserMutation = useMutation({
         mutationFn: logoutUser,
-        onSuccess: (data) => {
-            console.log("Temporary use because of build", data);
-
-            // Pusher live channels stoping
-            // pusher.unsubscribe(`private-chat.${loggedUser?.id}`);
-            // pusher.unsubscribe("presence-online");
-            // pusher.disconnect();
+        onSuccess: () => {
+            // console.log("Temporary use because of build", data);
 
             // Clear localStorage
             localStorage.removeItem("loggedInUser");
@@ -36,7 +30,8 @@ function Sidebar() {
             dispatch(logoutUserFromReduxAndLS());
 
             // Navigation
-            navigate("/login");
+
+            window.location.href = "/login"; // navigate and refresh home
         },
         onError: (err) => {
             console.log("Temporary use because of build", err);

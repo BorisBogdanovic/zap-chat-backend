@@ -15,7 +15,7 @@ export async function registerNewUser(user: RegisterFormUser) {
         });
         if (!res.ok) throw new Error(`${res.status}, ${res.statusText}`);
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         return data;
     } catch (err) {
         console.log(err);
@@ -35,7 +35,7 @@ export async function loginUser(user: LoginFormUser) {
         });
         if (!res.ok) throw new Error(`${res.status}, ${res.statusText}`);
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         return data;
     } catch (err) {
         console.log(err);
@@ -63,7 +63,7 @@ export async function logoutUser() {
         if (!res.ok) throw new Error(`${res.status}, ${res.statusText}`);
 
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
 
         return data;
     } catch (err) {

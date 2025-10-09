@@ -39,3 +39,11 @@ export function transformLiveToChat(
         },
     };
 }
+
+// Pusher channels ending
+// export const unsubscribeAllPusherChannels = () => {
+//     Object.values(pusher.channels.channels).forEach((channel: any) => {
+//         channel.unbind_all();
+//         pusher.unsubscribe(channel.name);
+//     });
+// };

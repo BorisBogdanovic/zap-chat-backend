@@ -57,12 +57,12 @@ function Home() {
         });
 
         // Channel error log
-        channel.bind("pusher:subscription_error", (status: any) => {
-            console.error("❌ Subscription error:", status);
-        });
+        // channel.bind("pusher:subscription_error", (status: any) => {
+        //     console.error("❌ Subscription error:", status);
+        // });
 
         channel.bind("MessageSentEvent", (data: LiveMessage) => {
-            console.log("Live message:", data);
+            // console.log("Live message:", data);
 
             // If logged user sent msg, ignore it
             if (data.from_id === loggedUser.id) return;
@@ -142,7 +142,7 @@ function Home() {
         };
     }, [loggedUser]);
 
-    console.log("Online users: ", onlineUsers);
+    // console.log("HOME Online users: ", onlineUsers);
     // console.log("Conversation messages", conversationMessages);
     // console.log("Logged user", loggedUser);
     // console.log("Targer user", targetUser);

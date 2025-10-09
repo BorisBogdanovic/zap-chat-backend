@@ -1,22 +1,21 @@
 import { useState } from "react";
 import MobileModal from "./mobileModal";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "../services/authServices";
 import { logoutUserFromReduxAndLS } from "../redux/slice";
 import { useDispatch } from "react-redux";
+import { showErrorToast } from "./toast";
 
 function MobileHeader() {
     const [mobModal, setMobModal] = useState(false);
-    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
 
     // HTTP POST
     const logoutUserMutation = useMutation({
         mutationFn: logoutUser,
-        onSuccess: (data) => {
-            console.log("Temporary use because of build", data);
+        onSuccess: () => {
             // Clear localStorage
             localStorage.removeItem("loggedInUser");
             localStorage.removeItem("auth_token");
@@ -25,12 +24,12 @@ function MobileHeader() {
             dispatch(logoutUserFromReduxAndLS());
 
             // Navigation
-            navigate("/login");
+            window.location.href = "/login"; // navigate and refresh home
         },
         onError: (err) => {
             console.log("Temporary use because of build", err);
 
-            alert("Logout failed!");
+            showErrorToast("Logout failed!");
         },
     });
 
