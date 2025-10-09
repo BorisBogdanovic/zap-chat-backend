@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./components/privateRoute";
 import PublicRoute from "./components/publicRoute";
@@ -7,6 +7,12 @@ import "ldrs/ring";
 import { Helix } from "ldrs/react";
 import "ldrs/react/Helix.css";
 import { ToastContainer } from "react-toastify";
+import { Members, OnlineUser } from "./types/interfaces";
+import { getPusher, initPusher } from "./pusherClient";
+import { useSelector } from "react-redux";
+import { RootState } from "./redux/store";
+import { ChatMessage, LiveMessage, User } from "./types/type";
+import { transformLiveToChat } from "./utils/utils";
 
 const Register = lazy(() => import("./pages/auth-pages/register"));
 const Login = lazy(() => import("./pages/auth-pages/login"));
@@ -19,6 +25,115 @@ const Settings = lazy(() => import("./pages/settings"));
 // Default values shown
 
 function App() {
+    const loggedUser = useSelector(
+        (state: RootState) => state.auth.loggedInUser
+    );
+    // Online users
+    const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
+
+    // Conversation messages
+    const [conversationMessages, setConversationMessages] = useState<
+        ChatMessage[]
+    >([]);
+    const [targetUser, setTargetUser] = useState<User | null>(null);
+
+    //// !!!! Online user presence Pusher live
+    useEffect(() => {
+        if (!loggedUser?.auth_token) return;
+
+        // Pusher initialized after login!
+        const pusher = initPusher(loggedUser.auth_token);
+        const presenceChannel = pusher.subscribe("presence-online");
+
+        presenceChannel.bind(
+            "pusher:subscription_succeeded",
+            (members: Members) => {
+                const users = Object.values(members.members) as OnlineUser[];
+                setOnlineUsers(users);
+            }
+        );
+
+        presenceChannel.bind("pusher:member_added", (member: OnlineUser) => {
+            setOnlineUsers((prev) => {
+                const exists = prev.some(
+                    (u) => Number(u.id) === Number(member.id)
+                );
+                if (!exists) return [...prev, member];
+                return prev;
+            });
+        });
+
+        presenceChannel.bind("pusher:member_removed", (member: OnlineUser) => {
+            setOnlineUsers((prev) =>
+                prev.filter((u) => Number(u.id) !== Number(member.id))
+            );
+        });
+
+        return () => {
+            presenceChannel.unbind_all();
+            pusher.unsubscribe("presence-online");
+        };
+    }, [loggedUser]);
+
+    //// !!!! Pusher subscription for live messages
+    useEffect(() => {
+        if (!loggedUser) return;
+
+        const pusher = getPusher();
+        if (!pusher) {
+            console.warn("❌ Pusher not initialized");
+            return;
+        }
+
+        const channelName = `private-chat.${loggedUser.id}`;
+        const channel = pusher.subscribe(channelName);
+
+        channel.bind("pusher:subscription_succeeded", () => {
+            console.log(`✅ Subscription succeeded for ${channelName}`);
+        });
+
+        channel.bind("MessageSentEvent", (data: LiveMessage) => {
+            // If logged user sent msg, ignore because of optimistic msg
+            if (data.from_id === loggedUser.id) return;
+
+            if (targetUser && data.from_id !== targetUser.id) return;
+
+            setConversationMessages((prev) => {
+                // Check optimistic msg duplicates
+                const tempExists = prev.some(
+                    (m) =>
+                        String(m.id).startsWith("temp") &&
+                        m.message === data.message &&
+                        m.from_id === data.from_id
+                );
+
+                if (tempExists) {
+                    // update temp msg
+                    return prev.map((m) =>
+                        String(m.id).startsWith("temp") &&
+                        m.message === data.message &&
+                        m.from_id === data.from_id
+                            ? { ...m, ...data, confirmed: true }
+                            : m
+                    );
+                }
+
+                // Type merging
+                const newMessage = transformLiveToChat(
+                    data,
+                    loggedUser,
+                    targetUser
+                );
+                return [...prev, newMessage];
+            });
+        });
+
+        return () => {
+            console.log(`🧹 Cleanup for ${channelName}`);
+            channel.unbind_all();
+            pusher.unsubscribe(channelName);
+        };
+    }, [loggedUser, targetUser]);
     return (
         <>
             <BrowserRouter>
@@ -66,7 +181,17 @@ function App() {
                                 path="/"
                                 element={
                                     <PrivateRoute>
-                                        <Home />
+                                        <Home
+                                            onlineUsers={onlineUsers}
+                                            targetUser={targetUser}
+                                            setTargetUser={setTargetUser}
+                                            conversationMessages={
+                                                conversationMessages
+                                            }
+                                            setConversationMessages={
+                                                setConversationMessages
+                                            }
+                                        />
                                     </PrivateRoute>
                                 }
                             />

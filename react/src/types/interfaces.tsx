@@ -65,3 +65,14 @@ export interface Members {
     members: OnlineUser;
     myID: string;
 }
+
+// Home props
+export interface HomeProps {
+    onlineUsers: OnlineUser[];
+    targetUser: User | null;
+    setTargetUser: React.Dispatch<React.SetStateAction<User | null>>;
+    conversationMessages: ChatMessage[];
+    setConversationMessages: React.Dispatch<
+        React.SetStateAction<ChatMessage[]>
+    >;
+}

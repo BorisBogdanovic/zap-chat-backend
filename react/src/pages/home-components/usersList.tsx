@@ -105,7 +105,6 @@ function UsersList({
                                 new Date(a.created_at).getTime()
                         )[0];
 
-                    // const isOnline = onlineUsers.some((u) => u.id === user.id);
                     const isOnline = onlineUsers.some(
                         (u) => Number(u.id) === Number(user.id)
                     );
