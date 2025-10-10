@@ -36,6 +36,7 @@ function App() {
         ChatMessage[]
     >([]);
     const [targetUser, setTargetUser] = useState<User | null>(null);
+    const [typingUsers, setTypingUsers] = useState<Record<number, boolean>>({});
 
     //// !!!! Online user presence Pusher live
     useEffect(() => {
@@ -128,6 +129,17 @@ function App() {
             });
         });
 
+        // Typing event
+
+        channel.bind("UserTyping", (data: { fromId: number }) => {
+            const fromId = Number(data.fromId); // ✅ ispravno
+            setTypingUsers((prev) => ({ ...prev, [fromId]: true }));
+
+            setTimeout(() => {
+                setTypingUsers((prev) => ({ ...prev, [fromId]: false }));
+            }, 2500);
+        });
+
         return () => {
             console.log(`🧹 Cleanup for ${channelName}`);
             channel.unbind_all();
@@ -191,6 +203,7 @@ function App() {
                                             setConversationMessages={
                                                 setConversationMessages
                                             }
+                                            typingUsers={typingUsers}
                                         />
                                     </PrivateRoute>
                                 }

@@ -16,6 +16,7 @@ function Home({
     setTargetUser,
     conversationMessages,
     setConversationMessages,
+    typingUsers,
 }: HomeProps) {
     const loggedUser = useSelector(
         (state: RootState) => state.auth.loggedInUser
@@ -73,6 +74,7 @@ function Home({
                             targetUser={targetUser}
                             loggedUser={loggedUser}
                             setShowConversation={setShowConversation}
+                            typingUsers={typingUsers}
                         />
                     </>
                 ) : (
@@ -87,6 +89,7 @@ function Home({
                         message={message}
                         setMessage={setMessage}
                         setConversationMessages={setConversationMessages}
+                        typingUsers={typingUsers}
                     />
                 )}
             </div>

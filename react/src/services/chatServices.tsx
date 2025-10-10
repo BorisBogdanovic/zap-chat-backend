@@ -66,3 +66,26 @@ export async function fetchMessages(contact_id?: number) {
 
     return res.json();
 }
+
+// Typing POST
+export async function activateTyping(id: number) {
+    const storedUser = localStorage.getItem("loggedInUser");
+    const token = storedUser ? JSON.parse(storedUser).auth_token : null;
+    if (!token) throw new Error("No token found");
+
+    const res = await fetch(`${API_URL}/user/typing`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ to_id: id }),
+    });
+    console.log(res);
+
+    if (!res.ok) {
+        throw new Error("Failed to send message");
+    }
+
+    return res.json();
+}

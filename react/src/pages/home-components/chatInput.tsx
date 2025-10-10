@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMutation } from "@tanstack/react-query";
-import { sendMessage } from "../../services/chatServices";
+import { activateTyping, sendMessage } from "../../services/chatServices";
 import { ChatInputProps, SendMessagePayload } from "../../types/interfaces";
 import { ChatMessage, Message } from "../../types/type";
+import { showErrorToast } from "../../components/toast";
+import { useMemo } from "react";
+import debounce from "lodash.debounce";
 
 function ChatInput({
     loggedUser,
@@ -9,6 +13,7 @@ function ChatInput({
     message,
     setMessage,
     setConversationMessages,
+    typingUsers,
 }: ChatInputProps) {
     // Send message mutation
     const { mutate: sendMessageMutate, isPending: sending } = useMutation({
@@ -19,7 +24,18 @@ function ChatInput({
             if (!data || !data.data || !targetUser) return;
             setMessage("");
         },
-        onError: () => alert("Failed to send message"),
+        onError: () => showErrorToast("Failed to send message"),
+    });
+
+    // Typing mutation
+    const { mutate: typingMutation } = useMutation({
+        mutationFn: (payload: number) => activateTyping(payload),
+        onSuccess: (data: number) => {
+            console.log("Typing mutation data: ", data);
+
+            if (!data || !targetUser) return;
+        },
+        onError: () => showErrorToast("Failed to send message"),
     });
 
     function handleSendMessage(e: React.FormEvent<HTMLFormElement>) {
@@ -55,6 +71,16 @@ function ChatInput({
             message: message,
         });
     }
+
+    const debouncedTyping = useMemo(
+        () =>
+            debounce(() => {
+                if (!targetUser) return;
+                typingMutation(targetUser.id);
+            }, 300),
+        [targetUser, typingMutation]
+    );
+
     return (
         <div className="conversation-input">
             <form onSubmit={handleSendMessage} className="message-input">
@@ -62,7 +88,10 @@ function ChatInput({
                     type="text"
                     placeholder="Type your message..."
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={(e) => {
+                        setMessage(e.target.value);
+                        debouncedTyping();
+                    }}
                 />
                 <button
                     type="submit"

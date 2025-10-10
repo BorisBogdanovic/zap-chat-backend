@@ -7,6 +7,7 @@ function Conversation({
     targetUser,
     loggedUser,
     setShowConversation,
+    typingUsers,
 }: ConversationProps) {
     // Auto scroll
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -25,6 +26,9 @@ function Conversation({
             ? `http://localhost:8000/${user.image_path}`
             : `http://localhost:8000/storage/${user.image_path}`;
     }
+
+    console.log("Typing users:", typingUsers, "targetUser id:", targetUser?.id);
+
     return (
         <>
             <div className="conversation-header">
@@ -71,6 +75,7 @@ function Conversation({
                                         {msg.message}
                                     </div>
                                 </div>
+
                                 <span className="time">
                                     {new Date(
                                         msg.created_at ?? Date.now()
@@ -83,6 +88,13 @@ function Conversation({
                         </div>
                     );
                 })}
+                {targetUser && typingUsers[targetUser.id] && (
+                    <p className="typing-indicator">
+                        {targetUser.name} is typing...
+                        <span></span>
+                    </p>
+                )}
+
                 <div ref={messagesEndRef} />
             </section>
         </>

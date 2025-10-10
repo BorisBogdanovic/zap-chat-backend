@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { ReactNode } from "react";
-import { ChatMessage, LiveMessage, LoggedUser, Messages, User } from "./type";
+import { ChatMessage, LoggedUser, Messages, User } from "./type";
 
 // Tipiziranje za children (PrivateRoute)
 export interface PrivateRouteProps {
@@ -35,6 +35,7 @@ export interface ChatInputProps {
     setConversationMessages: React.Dispatch<
         React.SetStateAction<ChatMessage[]>
     >;
+    typingUsers: Record<number, boolean>;
 }
 
 export interface ConversationProps {
@@ -42,6 +43,7 @@ export interface ConversationProps {
     targetUser: User | null;
     loggedUser: LoggedUser | null;
     setShowConversation: React.Dispatch<React.SetStateAction<boolean>>;
+    typingUsers: Record<number, boolean>;
 }
 
 // Online user obj
@@ -75,4 +77,10 @@ export interface HomeProps {
     setConversationMessages: React.Dispatch<
         React.SetStateAction<ChatMessage[]>
     >;
+    typingUsers: Record<number, boolean>;
+}
+
+// User live typing event
+export interface UserTypingEvent {
+    fromId: number;
 }
