@@ -55,7 +55,6 @@ function Home({
                 <UsersList
                     loggedUser={loggedUser}
                     setTargetUser={setTargetUser}
-                    messages={messages}
                     setShowConversation={setShowConversation}
                     onlineUsers={onlineUsers}
                 />
@@ -89,7 +88,6 @@ function Home({
                         message={message}
                         setMessage={setMessage}
                         setConversationMessages={setConversationMessages}
-                        typingUsers={typingUsers}
                     />
                 )}
             </div>

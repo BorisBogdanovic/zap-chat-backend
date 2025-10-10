@@ -22,6 +22,10 @@ export type User = {
     last_name: string;
     id: number;
     name: string;
+
+    last_message: string;
+    last_message_at: string;
+    last_message_from_id: number;
 };
 
 // Edited User Form

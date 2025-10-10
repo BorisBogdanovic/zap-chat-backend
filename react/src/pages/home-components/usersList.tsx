@@ -1,21 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchUsers } from "../../services/chatServices";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDebounce } from "../../hooks/useDebaunce";
 import { Helix } from "ldrs/react";
-import { ChatMessage, User } from "../../types/type";
+import { User } from "../../types/type";
 import { UsersListProps } from "../../types/interfaces";
 
 function UsersList({
     loggedUser,
     setTargetUser,
-    messages,
     setShowConversation,
     onlineUsers,
 }: UsersListProps) {
     const [users_search, setUsersSearch] = useState("");
     const debouncedSearch = useDebounce(users_search, 2000);
-    const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
 
     // Fetch users
     const {
@@ -28,23 +26,8 @@ function UsersList({
         staleTime: 0,
     });
 
-    // All messages on page load. ASK BE FOR ALL MESSAGES!!!
-    // We use for now messages from fetch that require targetUser id
-    useEffect(() => {
-        if (messages && Array.isArray(messages.data.messages)) {
-            // Dodajemo samo nove poruke koje još nisu u allMessages
-            // console.log(messages);
-            setAllMessages((prev) => {
-                const newMsgs = messages.data.messages.filter(
-                    (msg: ChatMessage) => !prev.some((m) => m.id === msg.id)
-                );
-
-                return [...prev, ...newMsgs];
-            });
-        }
-    }, [messages]);
-
     // console.log("Online users in render:", onlineUsers);
+    // console.log("Users", users);
 
     // Loading / Error states
     if (isLoading)
@@ -90,21 +73,7 @@ function UsersList({
 
             <div className="chats">
                 {users.data.map((user: User) => {
-                    // Uzmi poslednju poruku za ovog user-a iz allMessages
-                    const lastMessage = allMessages
-                        .filter(
-                            (msg) =>
-                                (msg.from_id === loggedUser?.id &&
-                                    msg.to_id === user.id) ||
-                                (msg.from_id === user.id &&
-                                    msg.to_id === loggedUser?.id)
-                        )
-                        .sort(
-                            (a, b) =>
-                                new Date(b.created_at).getTime() -
-                                new Date(a.created_at).getTime()
-                        )[0];
-
+                    // Check online
                     const isOnline = onlineUsers.some(
                         (u) => Number(u.id) === Number(user.id)
                     );
@@ -139,13 +108,13 @@ function UsersList({
                                 <div className="chat-name">{user.name}</div>
 
                                 <div className="chat-text">
-                                    {lastMessage?.message || "No messages yet"}
+                                    {user?.last_message || "No messages yet"}
                                 </div>
                             </div>
                             <div className="chat-time">
-                                {lastMessage
+                                {user
                                     ? new Date(
-                                          lastMessage.created_at
+                                          user.last_message_at
                                       ).toLocaleTimeString([], {
                                           hour: "2-digit",
                                           minute: "2-digit",

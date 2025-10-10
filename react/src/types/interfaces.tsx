@@ -21,7 +21,6 @@ export interface SendMessagePayload {
 export interface UsersListProps {
     loggedUser: LoggedUser | null;
     setTargetUser: React.Dispatch<React.SetStateAction<User | null>>;
-    messages: Messages;
     setShowConversation: React.Dispatch<React.SetStateAction<boolean>>;
     onlineUsers: OnlineUser[];
 }
@@ -35,7 +34,6 @@ export interface ChatInputProps {
     setConversationMessages: React.Dispatch<
         React.SetStateAction<ChatMessage[]>
     >;
-    typingUsers: Record<number, boolean>;
 }
 
 export interface ConversationProps {

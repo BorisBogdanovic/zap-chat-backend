@@ -30,7 +30,6 @@ function App() {
     );
     // Online users
     const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
-
     // Conversation messages
     const [conversationMessages, setConversationMessages] = useState<
         ChatMessage[]
@@ -41,7 +40,7 @@ function App() {
     // audio
     const notificationSound = new Audio("/sounds/notification.mp3");
 
-    // Sound event enable
+    // Sound event enable, TODO fix this
     useEffect(() => {
         const enableSound = () => {
             notificationSound.play().catch(() => {});
@@ -142,6 +141,8 @@ function App() {
                             : m
                     );
                 }
+
+                // Fix this TODO Jovan
                 playNotification();
 
                 // Type merging
@@ -155,7 +156,6 @@ function App() {
         });
 
         // Typing event
-
         channel.bind("UserTyping", (data: { fromId: number }) => {
             const fromId = Number(data.fromId); // ✅ ispravno
             setTypingUsers((prev) => ({ ...prev, [fromId]: true }));

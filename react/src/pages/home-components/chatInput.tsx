@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { activateTyping, sendMessage } from "../../services/chatServices";
 import { ChatInputProps, SendMessagePayload } from "../../types/interfaces";
 import { ChatMessage, Message } from "../../types/type";
@@ -13,8 +13,9 @@ function ChatInput({
     message,
     setMessage,
     setConversationMessages,
-    typingUsers,
 }: ChatInputProps) {
+    const queryClient = useQueryClient();
+
     // Send message mutation
     const { mutate: sendMessageMutate, isPending: sending } = useMutation({
         mutationFn: (payload: SendMessagePayload) => sendMessage(payload),
@@ -23,6 +24,9 @@ function ChatInput({
 
             if (!data || !data.data || !targetUser) return;
             setMessage("");
+
+            // Refetch users
+            queryClient.invalidateQueries({ queryKey: ["users"] });
         },
         onError: () => showErrorToast("Failed to send message"),
     });
