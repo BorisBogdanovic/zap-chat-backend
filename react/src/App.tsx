@@ -38,6 +38,30 @@ function App() {
     const [targetUser, setTargetUser] = useState<User | null>(null);
     const [typingUsers, setTypingUsers] = useState<Record<number, boolean>>({});
 
+    // audio
+    const notificationSound = new Audio("/sounds/notification.mp3");
+
+    // Sound event enable
+    useEffect(() => {
+        const enableSound = () => {
+            notificationSound.play().catch(() => {});
+            window.removeEventListener("click", enableSound);
+        };
+
+        window.addEventListener("click", enableSound);
+
+        return () => {
+            window.removeEventListener("click", enableSound);
+        };
+    }, []);
+
+    const playNotification = () => {
+        if (!notificationSound) return;
+        notificationSound.play().catch(() => {
+            console.warn("🔕 User hasn't interacted yet, sound blocked");
+        });
+    };
+
     //// !!!! Online user presence Pusher live
     useEffect(() => {
         if (!loggedUser?.auth_token) return;
@@ -118,6 +142,7 @@ function App() {
                             : m
                     );
                 }
+                playNotification();
 
                 // Type merging
                 const newMessage = transformLiveToChat(

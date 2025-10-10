@@ -44,7 +44,7 @@ function UsersList({
         }
     }, [messages]);
 
-    console.log("Online users in render:", onlineUsers);
+    // console.log("Online users in render:", onlineUsers);
 
     // Loading / Error states
     if (isLoading)
