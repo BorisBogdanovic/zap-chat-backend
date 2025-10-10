@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
+use App\Models\Message;
 
 
 class UserService
@@ -17,18 +18,49 @@ class UserService
 //////////////////////////////////////////////////////////////////////////////GET USERS SERVICES
 public function fetchUsers(?string $search = null): Collection
 {
-        $query = User::where('id', '!=', Auth::id());
+    $authId = Auth::id();
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+    $baseFilter = function ($q) use ($authId) {
+        $q->where(function ($q2) use ($authId) {
+           $q2->whereColumn('from_id', 'users.id')->where('to_id', $authId);
+        })->orWhere(function ($q3) use ($authId) {
+            $q3->where('from_id', $authId)->whereColumn('to_id', 'users.id');
+        });
+    };
+
+    $query = User::query()
+        ->where('id', '!=', $authId)
+        ->when($search, function ($q) use ($search) {
+            $q->where(function ($q2) use ($search) {
+                $q2->where('name', 'like', "%{$search}%")
+                   ->orWhere('last_name', 'like', "%{$search}%")
+                   ->orWhere('username', 'like', "%{$search}%");
             });
-        }
+        })
+        // Kolone za poslednju poruku između ulogovanog i svakog usera
+        ->addSelect([
+            'id', 'name', 'last_name', 'email', 'image_path', 'username',
+            // tekst poslednje poruke
+            'last_message' => Message::select('message')
+                ->where($baseFilter)
+                ->latest('created_at')
+                ->limit(1),
+            // vreme poslednje poruke (korisno za sortiranje)
+            'last_message_at' => Message::select('created_at')
+                ->where($baseFilter)
+                ->latest('created_at')
+                ->limit(1),
+            // ko je poslao poslednju poruku (da na frontu znaš da li da staviš "You:" prefiks)
+            'last_message_from_id' => Message::select('from_id')
+                ->where($baseFilter)
+                ->latest('created_at')
+                ->limit(1),
+        ])
+        // opciono: sortiraj listu po svežini chata (NULL ide na dno)
+        ->orderByDesc('last_message_at');
 
-        return $query->get(['id', 'name', 'last_name', 'email', 'image_path', 'username']);
-}  
+    return $query->get();
+}
 
 //////////////////////////////////////////////////////////////////////////////EDIT USER SETTIGS SERVICES
 public function updateSettings(User $user, array $data): User

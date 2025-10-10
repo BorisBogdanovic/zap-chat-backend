@@ -71,9 +71,7 @@ public function userTyping(UserTypingRequest $request): JsonResponse
 {
 
 
-    broadcast(new UserTyping(auth()->id(), $request->to_id))->toOthers();;
-
-    
+    broadcast(new UserTyping(auth()->id(), $request->to_id))->toOthers();
         return response()->json([
             'status'  =>true,
             'message' => 'Typing event broadcasted.'
