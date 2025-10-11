@@ -17,7 +17,7 @@ function Conversation({
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [conversationMessages]);
+    }, [conversationMessages, typingUsers, targetUser]);
 
     // User convo image src helper function
     function getUserImageUrl(user: LoggedUser | User | null | undefined) {
