@@ -1,4 +1,11 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import {
+    lazy,
+    Suspense,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./components/privateRoute";
 import PublicRoute from "./components/publicRoute";
@@ -37,29 +44,58 @@ function App() {
     const [targetUser, setTargetUser] = useState<User | null>(null);
     const [typingUsers, setTypingUsers] = useState<Record<number, boolean>>({});
 
-    // audio
-    const notificationSound = new Audio("/sounds/notification.mp3");
+    // Audio
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const soundEnabledRef = useRef(false);
 
-    // Sound event enable, TODO fix this
+    // Sound msg
     useEffect(() => {
+        // kreiraj audio jednom
+        audioRef.current = new Audio("/sounds/msg-sound.mp3");
+
         const enableSound = () => {
-            notificationSound.play().catch(() => {});
+            const audio = audioRef.current;
+            if (!audio) return;
+
+            // pokušaj da "otključaš" audio bez stvarnog zvuka
+            audio.muted = true;
+            audio
+                .play()
+                .then(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.muted = false;
+                    soundEnabledRef.current = true;
+                    console.log("🔊 Sound unlocked and ready!");
+                })
+                .catch((err) => {
+                    console.warn("⚠️ Sound unlock failed:", err);
+                });
+
             window.removeEventListener("click", enableSound);
         };
 
         window.addEventListener("click", enableSound);
-
-        return () => {
-            window.removeEventListener("click", enableSound);
-        };
+        return () => window.removeEventListener("click", enableSound);
     }, []);
 
-    const playNotification = () => {
-        if (!notificationSound) return;
-        notificationSound.play().catch(() => {
+    // Sound function
+    const playNotification = useCallback(() => {
+        const audio = audioRef.current;
+        if (!audio) {
+            console.warn("Audio not initialized yet");
+            return;
+        }
+        if (!soundEnabledRef.current) {
             console.warn("🔕 User hasn't interacted yet, sound blocked");
+            return;
+        }
+
+        audio.currentTime = 0;
+        audio.play().catch((err) => {
+            console.warn("❌ Failed to play notification:", err);
         });
-    };
+    }, []);
 
     //// !!!! Online user presence Pusher live
     useEffect(() => {
@@ -142,8 +178,8 @@ function App() {
                     );
                 }
 
-                // Fix this TODO Jovan
-                playNotification();
+                // Sound msg
+                playNotification(); // 🔔
 
                 // Type merging
                 const newMessage = transformLiveToChat(
@@ -171,6 +207,7 @@ function App() {
             pusher.unsubscribe(channelName);
         };
     }, [loggedUser, targetUser]);
+
     return (
         <>
             <BrowserRouter>
