@@ -27,7 +27,7 @@ function Conversation({
             : `http://localhost:8000/storage/${user.image_path}`;
     }
 
-    console.log("Typing users:", typingUsers, "targetUser id:", targetUser?.id);
+    // console.log("Typing users:", typingUsers, "targetUser id:", targetUser?.id);
 
     return (
         <>

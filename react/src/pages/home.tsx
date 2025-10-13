@@ -33,7 +33,7 @@ function Home({
 
     // Update conversationMessages when messages are fetched
     useEffect(() => {
-        // console.log("Messages", messages);
+        console.log("Messages", messages);
         if (messages && Array.isArray(messages.data.messages)) {
             setConversationMessages(messages.data.messages);
         } else {
