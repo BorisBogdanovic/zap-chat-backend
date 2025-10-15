@@ -24,7 +24,7 @@ public function send(int $fromId,int $toId,string $messageText):Message
      return $message->load('from:id,name,image_path', 'to:id,name,image_path');
 }
 
-public function fetchMessages(int $userId, int $contactId, int $perPage = 20, int $page = 1): array
+public function fetchMessages(int $userId, int $contactId): array
 {
     $contact = User::findOrFail($contactId);
 
@@ -32,17 +32,11 @@ public function fetchMessages(int $userId, int $contactId, int $perPage = 20, in
         ->with(['from:id,name,image_path', 'to:id,name,image_path'])
         ->orderBy('created_at', 'asc')
         ->orderBy('id', 'asc')
-        ->paginate($perPage, ['*'], 'page', $page);
+        ->get();
 
     return [
         'contact'      => $contact,
-        'messages'     => $messages->items(),
-        'current_page' => $messages->currentPage(),
-        'last_page'    => $messages->lastPage(),
-        'per_page'     => $messages->perPage(),
-        'total'        => $messages->total(),
-        'next_page'    => $messages->nextPageUrl(),
-        'prev_page'    => $messages->previousPageUrl(),
-    ];
+        'messages'     => $messages,
+        ];
 }
 }

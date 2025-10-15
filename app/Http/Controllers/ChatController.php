@@ -42,31 +42,25 @@ public function fetchMessages(FetchMessageRequest $request): JsonResponse
 {
     try {
         $contactId = (int) $request->contact_id;
-        $perPage = (int) $request->input('per_page', 20);
-        $page = (int) $request->input('page', 1);
 
-        $data = Chat::fetchMessages(auth()->id(), $contactId, $perPage, $page);
+        
+        $data = Chat::fetchMessages(auth()->id(), $contactId);
 
         return response()->json([
             'status'  => true,
             'message' => 'Messages fetched successfully.',
             'data'    => [
-                'contact'      => $data['contact'],
-                'messages'     => $data['messages'],
-                'current_page' => $data['current_page'],
-                'last_page'    => $data['last_page'],
-                'per_page'     => $data['per_page'],
-                'total'        => $data['total'],
-                'next_page'    => $data['next_page'],
-                'prev_page'    => $data['prev_page'],
+                'contact'  => $data['contact'],
+                'messages' => $data['messages'],
+                
             ],
         ], 200);
 
     } catch (\Throwable $e) {
         Log::error('Messages fetch failed', [
-            'user_id' => auth()->id(),
+            'user_id'    => auth()->id(),
             'contact_id' => $request->contact_id,
-            'error' => $e->getMessage()
+            'error'      => $e->getMessage(),
         ]);
 
         return response()->json([
