@@ -13,17 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->use([
-            // 🔥 CORS mora biti prvi kako bi obradio sve zahteve
-            \Illuminate\Http\Middleware\HandleCors::class,
-
-            // Ostali standardni globalni middleware-i
-            \App\Http\Middleware\TrustProxies::class,
-            \Illuminate\Http\Middleware\TrustHosts::class,
-            \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-            \App\Http\Middleware\TrimStrings::class,
-            \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        ]);
+        
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
