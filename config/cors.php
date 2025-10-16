@@ -2,12 +2,13 @@
 
 return [
 
-      'paths' => ['api/*', 'sanctum/csrf-cookie', 'broadcasting/auth'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'broadcasting/auth'],
 
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
         'http://localhost:5173',
+        'https://zapchat-app.netlify.app'
     ],
 
     'allowed_origins_patterns' => [],
