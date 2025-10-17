@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use App\Models\Message;
+use Illuminate\Http\JsonResponse;
 
 
 class UserService
@@ -97,6 +98,42 @@ public function updateAvatar(User $user, UploadedFile $file): User
 
         return $user;
 }
+//////////////////////////////////////////////////////////////////////////////DELETE USER BY ADMIN
+ public function deleteUser(User $user): void
+    {
+        $authUser = Auth::user();
 
+        if (!$authUser->is_admin) {
+            throw new AuthorizationException('You are not authorized to delete users.');
+        }
+
+        if ($authUser->id === $user->id) {
+            throw new AuthorizationException('You cannot delete your own account.');
+        }
+        
+        if ($user->is_admin) {
+            throw new AuthorizationException('You cannot delete another admin.');
+        }
+
+        $user->delete();
+}
+//////////////////////////////////////////////////////////////////////////////EDITING USERNAME
+    public function updateUsername(User $user, string $newUsername): User
+    {
+        $authUser = Auth::user();
+
+        if (!$authUser->is_admin) {
+            throw new AuthorizationException('You are not authorized.');
+        }
+
+        if ($user->is_admin) {
+            throw new AuthorizationException('You cannot edit another admin.');
+        }
+
+       $user->username = $newUsername;
+        $user->save();
+
+        return $user;
+    }
 
 }

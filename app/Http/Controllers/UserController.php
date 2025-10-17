@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserSettingsRequest;
 use App\Http\Requests\UpdateUserImageRequest;
 use App\Http\Requests\UserSearchRequest;
-use App\Http\Requests\DeleteUserRequest;
+use App\Http\Requests\EditUsernameRequest;
 use App\Facades\UserFacade;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Exception;
 
 
@@ -83,4 +84,42 @@ public function updateImage(UpdateUserImageRequest $request): JsonResponse
         ],
     ],200);
 }
+//////////////////////////////////////////////////////////////////////////////DELETE USER
+public function userDelete(User $user): JsonResponse
+    {
+        try {
+           UserFacade::deleteUser($user);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User deleted successfully.'
+            ], 200);
+
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 403);
+        }
+    }
+//////////////////////////////////////////////////////////////////////////////EDIT USERNAME 
+public function editUsername(User $user, EditUsernameRequest $request): JsonResponse
+    {
+        try {
+         $updatedUser=UserFacade::updateUsername($user, $request->username);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Username updated successfully.',
+                'data' => $updatedUser
+            ], 200);
+
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 403);
+        }
+    }
+    
 }
