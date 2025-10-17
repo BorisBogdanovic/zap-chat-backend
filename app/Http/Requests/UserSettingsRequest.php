@@ -20,14 +20,24 @@ class UserSettingsRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-         return [
-            'name'      => 'sometimes|required|string|max:255',
-            'last_name' => 'sometimes|required|string|max:255',
-            'username' => 'sometimes|required|string|max:255|unique:users,username,' . auth()->id(),
-            'password'  => 'sometimes|nullable|string|min:8|confirmed',
-        ];
-    }
+{
+    return [
+        'name'      => 'sometimes|required|string|max:255',
+        'last_name' => 'sometimes|required|string|max:255',
+        'username'  => 'sometimes|required|string|max:255|unique:users,username,' . auth()->id(),
+        'password'  => 'sometimes|nullable|string|min:8',
+        'password_confirmation' => 'nullable|string|min:8',
+    ];
+}
+
+protected function withValidator($validator)
+{
+    $validator->after(function ($validator) {
+        if ($this->filled('password') && $this->password !== $this->password_confirmation) {
+            $validator->errors()->add('password_confirmation', 'Password confirmation does not match.');
+        }
+    });
+}
     public function messages(): array
     {
         return [

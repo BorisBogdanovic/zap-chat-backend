@@ -65,15 +65,16 @@ public function fetchUsers(?string $search = null): Collection
 //////////////////////////////////////////////////////////////////////////////EDIT USER SETTIGS SERVICES
 public function updateSettings(User $user, array $data): User
 {
-       
-        if (!empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        }
+    if (!empty($data['password'])) {
+        $data['password'] = Hash::make($data['password']);
+    } else {
+        unset($data['password']);
+    }
 
-        $user->fill($data);
-        $user->save();
+    $user->fill($data);
+    $user->save();
 
-        return $user;
+    return $user;
 }
 //////////////////////////////////////////////////////////////////////////////EDIT USER AVATAR SERVICES
 public function updateAvatar(User $user, UploadedFile $file): User
