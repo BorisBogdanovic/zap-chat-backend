@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('fetch-messages',[ChatController::class,'fetchMessages']);
   Route::post('user/typing', [ChatController::class, 'userTyping']);
 
-  Route::delete('user/delelete/{user}', [UserController::class, 'userDelete']);
+  Route::delete('user/delete/{user}', [UserController::class, 'userDelete']);
   Route::patch('user/{user}/edit', [UserController::class, 'editUsername']);
   
  
