@@ -40,7 +40,7 @@ public function fetchUsers(?string $search = null): Collection
         })
         // Kolone za poslednju poruku između ulogovanog i svakog usera
         ->addSelect([
-            'id', 'name', 'last_name', 'email', 'image_path', 'username',
+            'id', 'name', 'last_name', 'email', 'image_path', 'username','is_admin',
             // tekst poslednje poruke
             'last_message' => Message::select('message')
                 ->where($baseFilter)

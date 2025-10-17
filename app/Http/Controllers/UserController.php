@@ -24,6 +24,8 @@ public function fetchUsers(UserSearchRequest $request): JsonResponse
 {
     try {
         $users = UserFacade::fetchUsers($request->search);
+        
+       
 
         return response()->json([
             'status'  => true,
