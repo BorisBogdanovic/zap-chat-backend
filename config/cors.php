@@ -11,7 +11,7 @@ return [
         'https://zapchat-app.netlify.app'
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => ["*"],
 
     'allowed_headers' => ['*'],
 
